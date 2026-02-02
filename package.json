@@ -1,0 +1,49 @@
+{
+  "name": "@iyulab/mloop-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for MLoop CLI - ML.NET MLOps tool",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "mloop-mcp": "build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node build/index.js",
+    "dev": "npm run build && npm run start",
+    "clean": "rimraf build",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "mloop",
+    "ml.net",
+    "mlops",
+    "automl",
+    "machine-learning"
+  ],
+  "author": "iyulab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iyulab/MLoop.git",
+    "directory": "mcp"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "rimraf": "^6.0.0",
+    "typescript": "^5.7.0"
+  },
+  "files": [
+    "build",
+    "README.md"
+  ]
+}
