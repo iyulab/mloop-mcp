@@ -17,6 +17,7 @@ export const trainSchema = z.object({
   time: z.number().positive().optional().describe('Training time in seconds'),
   metric: z.string().optional().describe('Optimization metric'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
+  balance: z.string().optional().describe('Class balancing strategy: "auto" (balance to 10:1), "none", or target ratio (e.g., "5" for 5:1)'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -36,6 +37,7 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     if (options.time) cliParams['time'] = options.time;
     if (options.metric) cliParams['metric'] = options.metric;
     if (options.modelName) cliParams['name'] = options.modelName;
+    if (options.balance) cliParams['balance'] = options.balance;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
 
@@ -97,6 +99,10 @@ export const trainTool = {
       modelName: {
         type: 'string',
         description: 'Model name for namespacing (default: "default")',
+      },
+      balance: {
+        type: 'string',
+        description: 'Class balancing strategy for imbalanced datasets: "auto" (balance to 10:1 if needed), "none" (no balancing), or a number like "5" for 5:1 target ratio',
       },
     },
     required: ['projectPath'],
