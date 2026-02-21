@@ -47,7 +47,12 @@ export async function executeMloop(
   const mloopPath = getMloopPath();
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(mloopPath, args, {
+    // Quote arguments containing spaces when using shell mode
+    const quotedArgs = args.map(arg =>
+      arg.includes(' ') ? `"${arg}"` : arg
+    );
+
+    const proc = spawn(mloopPath, quotedArgs, {
       cwd,
       env: { ...process.env, ...env },
       shell: true, // Required for Windows

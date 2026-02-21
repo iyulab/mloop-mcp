@@ -12,13 +12,15 @@ export const infoSchema = z.object({
   projectPath: z.string().optional().describe('MLoop project path (optional, for relative paths)'),
   label: z.string().optional().describe('Label column name (overrides mloop.yaml setting)'),
   modelName: z.string().optional().describe('Model name to read label configuration from mloop.yaml (default: "default")'),
+  analyze: z.boolean().optional().describe('Enable deep analysis including correlation, feature importance, distribution, and anomaly detection'),
+  sampleSize: z.number().optional().describe('Maximum number of rows to sample for deep analysis (default: 50000)'),
 });
 
 export type InfoParams = z.infer<typeof infoSchema>;
 
 export async function info(params: InfoParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { dataFile, projectPath, label, modelName } = params;
+    const { dataFile, projectPath, label, modelName, analyze, sampleSize } = params;
 
     const args: string[] = ['info', dataFile];
     if (label) {
@@ -27,9 +29,16 @@ export async function info(params: InfoParams): Promise<{ content: Array<{ type:
     if (modelName) {
       args.push('--name', modelName);
     }
+    if (analyze) {
+      args.push('--analyze');
+    }
+    if (sampleSize !== undefined && sampleSize !== null) {
+      args.push('--sample-size', String(sampleSize));
+    }
 
     const result = await executeMloop(args, {
       cwd: projectPath,
+      timeout: analyze ? 600_000 : undefined, // 10 minutes for deep analysis
     });
 
     const output = parseCliOutput(result.stdout);
@@ -72,6 +81,14 @@ export const infoTool = {
       modelName: {
         type: 'string',
         description: 'Model name to read label configuration from mloop.yaml (default: "default")',
+      },
+      analyze: {
+        type: 'boolean',
+        description: 'Enable deep analysis including correlation, feature importance, distribution, and anomaly detection',
+      },
+      sampleSize: {
+        type: 'number',
+        description: 'Maximum number of rows to sample for deep analysis (default: 50000)',
       },
     },
     required: ['dataFile'],

@@ -29,10 +29,10 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     // Build positional arguments
     const positional: string[] = [];
     if (dataFile) positional.push(dataFile);
-    if (label) positional.push(label);
 
     // Map parameters to CLI flags
     const cliParams: Record<string, unknown> = {};
+    if (label) cliParams['label'] = label;
     if (options.task) cliParams['task'] = options.task;
     if (options.time) cliParams['time'] = options.time;
     if (options.metric) cliParams['metric'] = options.metric;
