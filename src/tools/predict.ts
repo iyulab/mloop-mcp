@@ -13,13 +13,15 @@ export const predictSchema = z.object({
   modelName: z.string().optional().describe('Model name'),
   output: z.string().optional().describe('Output file path'),
   log: z.boolean().optional().describe('Enable prediction logging'),
+  unknownStrategy: z.enum(['auto', 'error', 'use-most-frequent', 'use-missing']).optional()
+    .describe('Strategy for handling unknown categorical values in prediction data'),
 });
 
 export type PredictParams = z.infer<typeof predictSchema>;
 
 export async function predict(params: PredictParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, output, log } = params;
+    const { projectPath, dataFile, modelName, output, log, unknownStrategy } = params;
 
     // dataFile is a positional argument
     const positional: string[] = [];
@@ -29,6 +31,7 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
     if (modelName) cliParams['name'] = modelName;
     if (output) cliParams['output'] = output;
     if (log) cliParams['log'] = true;
+    if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
 
     const args = buildArgsWithPositional('predict', positional, cliParams);
 
@@ -80,6 +83,11 @@ export const predictTool = {
       log: {
         type: 'boolean',
         description: 'Enable prediction logging to DataStore',
+      },
+      unknownStrategy: {
+        type: 'string',
+        enum: ['auto', 'error', 'use-most-frequent', 'use-missing'],
+        description: 'Strategy for handling unknown categorical values: "auto" (auto-select based on ratio, default), "error" (fail on unknowns), "use-most-frequent" (replace with most common value), "use-missing" (replace with empty)',
       },
     },
     required: ['projectPath'],

@@ -18,6 +18,9 @@ export const trainSchema = z.object({
   metric: z.string().optional().describe('Optimization metric'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
   balance: z.string().optional().describe('Class balancing strategy: "auto" (balance to 10:1), "none", or target ratio (e.g., "5" for 5:1)'),
+  testSplit: z.number().min(0).max(1).optional().describe('Test data split ratio (0.0-1.0, default: 0.2)'),
+  noPromote: z.boolean().optional().describe('Skip automatic promotion to production'),
+  dropMissingLabels: z.boolean().optional().describe('Drop rows with missing label values before training'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -38,6 +41,9 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     if (options.metric) cliParams['metric'] = options.metric;
     if (options.modelName) cliParams['name'] = options.modelName;
     if (options.balance) cliParams['balance'] = options.balance;
+    if (options.testSplit !== undefined) cliParams['test-split'] = options.testSplit;
+    if (options.noPromote) cliParams['no-promote'] = true;
+    if (options.dropMissingLabels) cliParams['drop-missing-labels'] = true;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
 
@@ -103,6 +109,18 @@ export const trainTool = {
       balance: {
         type: 'string',
         description: 'Class balancing strategy for imbalanced datasets: "auto" (balance to 10:1 if needed), "none" (no balancing), or a number like "5" for 5:1 target ratio',
+      },
+      testSplit: {
+        type: 'number',
+        description: 'Test data split ratio (0.0-1.0, default: 0.2)',
+      },
+      noPromote: {
+        type: 'boolean',
+        description: 'Skip automatic promotion to production after training',
+      },
+      dropMissingLabels: {
+        type: 'boolean',
+        description: 'Drop rows with missing label values before training',
       },
     },
     required: ['projectPath'],
