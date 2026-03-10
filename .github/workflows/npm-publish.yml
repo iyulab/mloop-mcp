@@ -55,9 +55,9 @@ jobs:
       - name: Summary
         run: |
           if [ "${{ steps.version-check.outputs.skip }}" = "true" ]; then
-            echo "### Skipped" >> "$GITHUB_SUMMARY"
-            echo "${{ steps.version-check.outputs.package }}@${{ steps.version-check.outputs.local }} is already published." >> "$GITHUB_SUMMARY"
+            echo "### Skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "${{ steps.version-check.outputs.package }}@${{ steps.version-check.outputs.local }} is already published." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "### Published" >> "$GITHUB_SUMMARY"
-            echo "${{ steps.version-check.outputs.package }}@${{ steps.version-check.outputs.local }}" >> "$GITHUB_SUMMARY"
+            echo "### Published" >> "$GITHUB_STEP_SUMMARY"
+            echo "${{ steps.version-check.outputs.package }}@${{ steps.version-check.outputs.local }}" >> "$GITHUB_STEP_SUMMARY"
           fi
