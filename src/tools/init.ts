@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { mkdirSync } from 'fs';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
 import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
@@ -17,6 +18,9 @@ export type InitParams = z.infer<typeof initSchema>;
 
 export async function init(params: InitParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
+    // Ensure project directory exists
+    mkdirSync(params.projectPath, { recursive: true });
+
     const args = buildArgsWithPositional('init', ['.'], { task: params.task });
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);

@@ -22,22 +22,20 @@ export async function evaluate(params: EvaluateParams): Promise<{ content: Array
 
     // CLI usage: mloop evaluate [<experiment-id> [<test-data>]] [options]
     // Both experiment-id and test-data are positional arguments
+    // Note: test-data can only be specified after experiment-id (positional order)
     const args: string[] = ['evaluate'];
 
-    // First positional: experiment-id (optional)
     if (experimentId) {
       args.push(experimentId);
-    }
-
-    // Second positional: test-data (optional, only if experiment-id is provided)
-    if (dataFile) {
-      // If no experimentId but has dataFile, we need to pass empty or use production
-      if (!experimentId) {
-        // Use 'production' as placeholder to indicate use production model
-        args.push('production');
+      // test-data is only valid after experiment-id
+      if (dataFile) {
+        args.push(dataFile);
       }
-      args.push(dataFile);
     }
+    // If only dataFile is given without experimentId, we cannot pass it as
+    // the CLI requires experiment-id before test-data. In this case, the caller
+    // should place the file at datasets/test.csv and omit dataFile, or provide
+    // an experimentId.
 
     // Named option: --name
     if (modelName) {

@@ -47,15 +47,17 @@ export async function executeMloop(
   const mloopPath = getMloopPath();
 
   return new Promise((resolve, reject) => {
-    // Quote arguments containing spaces when using shell mode
+    // Build single command string for shell execution
+    // This avoids DEP0190 (passing args array with shell: true)
     const quotedArgs = args.map(arg =>
       arg.includes(' ') ? `"${arg}"` : arg
     );
+    const command = `${mloopPath} ${quotedArgs.join(' ')}`;
 
-    const proc = spawn(mloopPath, quotedArgs, {
+    const proc = spawn(command, [], {
       cwd,
       env: { ...process.env, ...env },
-      shell: true, // Required for Windows
+      shell: true, // Required for Windows PATH resolution
       windowsHide: true,
     });
 

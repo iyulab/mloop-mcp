@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { mkdirSync } from 'fs';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
 import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
@@ -22,7 +23,8 @@ export type QuickStartParams = z.infer<typeof quickStartSchema>;
 export async function quickStart(params: QuickStartParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   const steps: string[] = [];
   try {
-    // Step 1: Init
+    // Step 1: Init (ensure directory exists)
+    mkdirSync(params.projectPath, { recursive: true });
     const initArgs = buildArgsWithPositional('init', ['.'], { task: params.task });
     await executeMloop(initArgs, { cwd: params.projectPath });
     steps.push('Project initialized');
