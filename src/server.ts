@@ -22,6 +22,7 @@ import {
   feedbackTool, feedback, feedbackSchema,
   sampleTool, sample, sampleSchema,
   triggerTool, trigger, triggerSchema,
+  analyzeTool, analyze, analyzeSchema,
   // Composite workflow tools
   quickStartTool, quickStart, quickStartSchema,
   autoTrainTool, autoTrain, autoTrainSchema,
@@ -34,7 +35,7 @@ import {
 export function createServer(): McpServer {
   const server = new McpServer({
     name: 'mloop-mcp',
-    version: '0.2.0',
+    version: '0.2.1',
   });
 
   // === Existing tools ===
@@ -167,6 +168,14 @@ export function createServer(): McpServer {
     triggerTool.description,
     triggerSchema.shape,
     async (params) => trigger(params as Parameters<typeof trigger>[0])
+  );
+
+  // Register mloop_analyze
+  server.tool(
+    analyzeTool.name,
+    analyzeTool.description,
+    analyzeSchema.shape,
+    async (params) => analyze(params as Parameters<typeof analyze>[0])
   );
 
   // === Composite workflow tools ===

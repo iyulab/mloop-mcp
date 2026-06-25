@@ -75,6 +75,7 @@ plugins:
 | `mloop_list` | List experiments and their metrics |
 | `mloop_promote` | Promote an experiment to production |
 | `mloop_info` | Analyze and profile datasets |
+| `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
 | `mloop_status` | Show project status |
 | `mloop_compare` | Compare multiple experiments |
 | `mloop_evaluate` | Evaluate model performance |

@@ -9,6 +9,7 @@
 | `mloop_project_overview` | Full project status | `projectPath` |
 | `mloop_init` | Initialize project | `projectPath, task` |
 | `mloop_info` | Profile dataset | `dataFile, projectPath?` |
+| `mloop_analyze` | One read-only EDA aspect as JSON | `aspect, dataFile, label?` |
 | `mloop_train` | Train model | `projectPath, dataFile?, label?, time?` |
 | `mloop_predict` | Run predictions | `projectPath, dataFile?` |
 | `mloop_list` | List experiments | `projectPath` |
@@ -36,7 +37,7 @@ Use `mloop_auto_train` — profiles data, trains with auto-time, lists results.
 Use `mloop_project_overview` — returns status, experiments, and production metrics.
 
 ### Detailed Step-by-Step (multiple calls)
-1. `mloop_info` — understand data
+1. `mloop_info` — understand data (or `mloop_analyze <aspect>` for one EDA dimension as JSON: profile, correlation, importance, outliers, distribution)
 2. `mloop_init` — create project
 3. `mloop_train` — train model
 4. `mloop_list` — review experiments

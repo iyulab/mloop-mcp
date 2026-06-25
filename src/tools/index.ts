@@ -21,6 +21,7 @@ export { logsTool, logs, logsSchema, type LogsParams } from './logs.js';
 export { feedbackTool, feedback, feedbackSchema, type FeedbackParams } from './feedback.js';
 export { sampleTool, sample, sampleSchema, type SampleParams } from './sample.js';
 export { triggerTool, trigger, triggerSchema, type TriggerParams } from './trigger.js';
+export { analyzeTool, analyze, analyzeSchema, type AnalyzeParams } from './analyze.js';
 
 // Composite workflow tools
 export { quickStartTool, quickStart, quickStartSchema, type QuickStartParams } from './quick-start.js';
@@ -49,6 +50,7 @@ export const allTools = [
   { name: 'mloop_feedback', module: () => import('./feedback.js') },
   { name: 'mloop_sample', module: () => import('./sample.js') },
   { name: 'mloop_trigger', module: () => import('./trigger.js') },
+  { name: 'mloop_analyze', module: () => import('./analyze.js') },
   // Composite workflow tools
   { name: 'mloop_quick_start', module: () => import('./quick-start.js') },
   { name: 'mloop_auto_train', module: () => import('./auto-train.js') },
