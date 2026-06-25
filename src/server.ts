@@ -35,7 +35,7 @@ import {
 export function createServer(): McpServer {
   const server = new McpServer({
     name: 'mloop-mcp',
-    version: '0.2.1',
+    version: '0.3.0',
   });
 
   // === Existing tools ===
