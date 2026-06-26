@@ -23,6 +23,8 @@ import {
   sampleTool, sample, sampleSchema,
   triggerTool, trigger, triggerSchema,
   analyzeTool, analyze, analyzeSchema,
+  prepPlanTool, prepPlan, prepPlanSchema,
+  featuresSelectTool, featuresSelect, featuresSelectSchema,
   // Composite workflow tools
   quickStartTool, quickStart, quickStartSchema,
   autoTrainTool, autoTrain, autoTrainSchema,
@@ -35,7 +37,7 @@ import {
 export function createServer(): McpServer {
   const server = new McpServer({
     name: 'mloop-mcp',
-    version: '0.3.0',
+    version: '0.4.0',
   });
 
   // === Existing tools ===
@@ -176,6 +178,22 @@ export function createServer(): McpServer {
     analyzeTool.description,
     analyzeSchema.shape,
     async (params) => analyze(params as Parameters<typeof analyze>[0])
+  );
+
+  // Register mloop_prep_plan
+  server.tool(
+    prepPlanTool.name,
+    prepPlanTool.description,
+    prepPlanSchema.shape,
+    async (params) => prepPlan(params as Parameters<typeof prepPlan>[0])
+  );
+
+  // Register mloop_features_select
+  server.tool(
+    featuresSelectTool.name,
+    featuresSelectTool.description,
+    featuresSelectSchema.shape,
+    async (params) => featuresSelect(params as Parameters<typeof featuresSelect>[0])
   );
 
   // === Composite workflow tools ===

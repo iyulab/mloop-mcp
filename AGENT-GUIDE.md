@@ -10,6 +10,8 @@
 | `mloop_init` | Initialize project | `projectPath, task` |
 | `mloop_info` | Profile dataset | `dataFile, projectPath?` |
 | `mloop_analyze` | One read-only EDA aspect as JSON | `aspect, dataFile, label?` |
+| `mloop_prep_plan` | Declare a prep step in mloop.yaml (policy only) as JSON | `projectPath, set?/remove?, columns?` |
+| `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only) as JSON | `projectPath, drop?/keep?/reset?` |
 | `mloop_train` | Train model | `projectPath, dataFile?, label?, time?` |
 | `mloop_predict` | Run predictions | `projectPath, dataFile?` |
 | `mloop_list` | List experiments | `projectPath` |
@@ -39,6 +41,7 @@ Use `mloop_project_overview` — returns status, experiments, and production met
 ### Detailed Step-by-Step (multiple calls)
 1. `mloop_info` — understand data (or `mloop_analyze <aspect>` for one EDA dimension as JSON: profile, correlation, importance, outliers, distribution)
 2. `mloop_init` — create project
+   - Record feature-engineering decisions from the analysis (policy only, no data change): `mloop_features_select` to drop/keep columns, `mloop_prep_plan` to declare scaling/normalization (each step's JSON reports its leakage `category`/`foldSafe`)
 3. `mloop_train` — train model
 4. `mloop_list` — review experiments
 5. `mloop_promote` — promote best model

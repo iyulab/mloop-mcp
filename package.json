@@ -1,6 +1,6 @@
 {
   "name": "@iyulab/mloop-mcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "MCP server for MLoop CLI - ML.NET MLOps tool",
   "type": "module",
   "main": "build/index.js",
