@@ -22,8 +22,15 @@ export const analyzeSchema = z.object({
         '"outliers" (count/rate/isolation-forest threshold), ' +
         '"distribution" (skewness/kurtosis/normality tests)'
     ),
-  dataFile: z.string().describe('Path to the CSV dataset to analyze'),
-  projectPath: z.string().optional().describe('MLoop project path (for resolving relative paths)'),
+  dataFile: z
+    .string()
+    .optional()
+    .describe(
+      "Path to the CSV dataset to analyze. Optional: when omitted, defaults to the project's " +
+        'configured train data (data.train in mloop.yaml, else datasets/train.csv). Pass projectPath ' +
+        'so the default can be resolved.'
+    ),
+  projectPath: z.string().optional().describe('MLoop project path (for resolving relative paths and the default data file)'),
   label: z
     .string()
     .optional()
@@ -48,7 +55,9 @@ export async function analyze(
     // Always emit the structured JSON envelope for LLM consumption.
     cliParams['json'] = true;
 
-    const args = buildArgsWithPositional('analyze', [aspect, dataFile], cliParams);
+    // dataFile is optional: when omitted, the CLI defaults to the project's configured train data.
+    const positional = dataFile ? [aspect, dataFile] : [aspect];
+    const args = buildArgsWithPositional('analyze', positional, cliParams);
 
     const result = await executeMloop(args, {
       cwd: projectPath,
@@ -95,11 +104,12 @@ export const analyzeTool = {
       },
       dataFile: {
         type: 'string',
-        description: 'Path to the CSV dataset to analyze',
+        description:
+          "Path to the CSV dataset to analyze. Optional: when omitted, defaults to the project's configured train data (data.train in mloop.yaml, else datasets/train.csv). Pass projectPath so the default can be resolved.",
       },
       projectPath: {
         type: 'string',
-        description: 'MLoop project path for resolving relative paths',
+        description: 'MLoop project path for resolving relative paths and the default data file',
       },
       label: {
         type: 'string',
@@ -110,7 +120,7 @@ export const analyzeTool = {
         description: 'Model name to read label configuration from mloop.yaml (default: "default")',
       },
     },
-    required: ['aspect', 'dataFile'],
+    required: ['aspect'],
   },
   handler: analyze,
 };
