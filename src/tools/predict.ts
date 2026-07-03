@@ -33,18 +33,35 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
     if (log) cliParams['log'] = true;
     if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
 
+    // Structured propagation: without an explicit output file, request `--json` so the agent receives the
+    // full prediction rows (predictedLabel, probabilities, conformal band, and the normalized `confidence`
+    // MLoop now owns) instead of scraped Spectre text — this is what unblocked MCP structured consumption.
+    // An explicit `output` keeps the file-writing (CSV) path with its text summary.
+    const wantsFile = !!output;
+    if (!wantsFile) cliParams['json'] = true;
+
     const args = buildArgsWithPositional('predict', positional, cliParams);
 
     const result = await executeMloop(args, {
       cwd: projectPath,
     });
 
-    const outputText = parseCliOutput(result.stdout);
+    let outputText: string;
+    if (!wantsFile) {
+      // `--json` emits one JSON object on stdout. Fall back to text parsing for an older CLI without it.
+      try {
+        outputText = JSON.stringify(JSON.parse(result.stdout.trim()), null, 2);
+      } catch {
+        outputText = parseCliOutput(result.stdout) || 'Prediction completed successfully.';
+      }
+    } else {
+      outputText = parseCliOutput(result.stdout) || 'Prediction completed successfully.';
+    }
 
     return {
       content: [{
         type: 'text',
-        text: outputText || 'Prediction completed successfully.',
+        text: outputText,
       }],
     };
   } catch (error) {
