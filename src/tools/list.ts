@@ -22,6 +22,8 @@ export async function list(params: ListParams): Promise<{ content: Array<{ type:
     const cliParams: Record<string, unknown> = {};
     if (modelName) cliParams['name'] = modelName;
     if (showAll) cliParams['all'] = true;
+    // Structured output (mloop >= 0.21): experiments array + production map — no table scraping.
+    cliParams['json'] = true;
 
     const args = buildArgs('list', cliParams);
 

@@ -72,10 +72,11 @@ plugins:
 |------|-------------|
 | `mloop_train` | Train ML models using AutoML |
 | `mloop_predict` | Run predictions with trained models |
-| `mloop_list` | List experiments and their metrics |
-| `mloop_promote` | Promote an experiment to production |
+| `mloop_list` | List experiments and their metrics (structured JSON) |
+| `mloop_promote` | Promote an experiment to production (explicit ID, `latest`, or `best`) |
 | `mloop_info` | Analyze and profile datasets |
 | `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
+| `mloop_detect` | One-shot time-series anomaly detection with SPC bounds — no training, no project required (mloop >= 0.21) |
 | `mloop_prep_plan` | Declare a preprocessing step in mloop.yaml (policy only, no data change) as structured JSON |
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only, no data change) as structured JSON |
 | `mloop_status` | Show project status |

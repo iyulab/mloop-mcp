@@ -23,6 +23,7 @@ import {
   sampleTool, sample, sampleSchema,
   triggerTool, trigger, triggerSchema,
   analyzeTool, analyze, analyzeSchema,
+  detectTool, detect, detectSchema,
   prepPlanTool, prepPlan, prepPlanSchema,
   featuresSelectTool, featuresSelect, featuresSelectSchema,
   // Composite workflow tools
@@ -178,6 +179,14 @@ export function createServer(): McpServer {
     analyzeTool.description,
     analyzeSchema.shape,
     async (params) => analyze(params as Parameters<typeof analyze>[0])
+  );
+
+  // Register mloop_detect
+  server.tool(
+    detectTool.name,
+    detectTool.description,
+    detectSchema.shape,
+    async (params) => detect(params as Parameters<typeof detect>[0])
   );
 
   // Register mloop_prep_plan
