@@ -12,7 +12,7 @@ export const detectSchema = z.object({
   dataPath: z.string().describe('Path to the CSV file containing the time series'),
   column: z.string().optional().describe('Value column to monitor (auto-selected when the CSV has a single column)'),
   threshold: z.number().optional().describe('Anomaly decision threshold in [0, 1] (default 0.3)'),
-  sensitivity: z.number().optional().describe('Boundary sensitivity in [0, 100] — larger = tighter bounds (default 99)'),
+  sensitivity: z.number().optional().describe('Detection margin sensitivity in [0, 100] — larger = tighter margin, more anomalies kept; does not affect control limits (default 99)'),
   period: z.number().optional().describe('Seasonality period in points (default: auto-detect; 0 = non-seasonal)'),
   output: z.string().optional().describe('Also write the full per-point result to this CSV file'),
 });
@@ -59,7 +59,7 @@ export async function detect(params: DetectParams): Promise<{ content: Array<{ t
 
 export const detectTool = {
   name: 'mloop_detect',
-  description: 'One-shot time-series anomaly detection over an entire CSV series (SR-CNN, no training, no MLoop project required). Every point returns an anomaly verdict, score, and SPC-chart bounds (expectedValue/upperBound/lowerBound). Use this instead of train+predict when analyzing a whole series once.',
+  description: 'One-shot time-series anomaly detection over an entire CSV series (SR-CNN, no training, no MLoop project required). Every point returns an anomaly verdict, score, an expectedValue, control limits (controlLower/controlUpper — the chartable band: normal points lie inside it, scaled by the residual dispersion) and the detection margin (marginLower/marginUpper — the gate behind the verdict: isAnomaly implies the value is outside it, but not the converse). Use this instead of train+predict when analyzing a whole series once.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -77,7 +77,7 @@ export const detectTool = {
       },
       sensitivity: {
         type: 'number',
-        description: 'Boundary sensitivity in [0, 100] — larger = tighter bounds (default 99)',
+        description: 'Detection margin sensitivity in [0, 100] — larger = tighter margin, more anomalies kept; does not affect control limits (default 99)',
       },
       period: {
         type: 'number',
