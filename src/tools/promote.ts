@@ -13,7 +13,7 @@ export const promoteSchema = z.object({
   latest: z.boolean().optional().describe('Promote the most recent completed experiment'),
   best: z.boolean().optional().describe('Promote the completed experiment with the best metric (direction-aware)'),
   modelName: z.string().optional().describe('Model name'),
-  force: z.boolean().optional().describe('Skip confirmation'),
+  force: z.boolean().optional().describe('Skip confirmation, and promote a model the quality gate refuses'),
 });
 
 export type PromoteParams = z.infer<typeof promoteSchema>;
@@ -96,7 +96,7 @@ export const promoteTool = {
       },
       force: {
         type: 'boolean',
-        description: 'Skip confirmation prompt',
+        description: 'Skip the confirmation prompt, and promote a model the quality gate refuses (without it, such a model is refused with the reason)',
       },
     },
     required: ['projectPath'],
