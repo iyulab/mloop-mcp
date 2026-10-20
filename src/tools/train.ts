@@ -21,6 +21,7 @@ export const trainSchema = z.object({
   testSplit: z.number().min(0).max(1).optional().describe('Test data split ratio (0.0-1.0, default: 0.2)'),
   noPromote: z.boolean().optional().describe('Skip automatic promotion to production'),
   dropMissingLabels: z.boolean().optional().describe('Drop rows with missing label values before training'),
+  weight: z.string().optional().describe('Column that weights the rows (e.g. 1/π for sampled labels); never a feature'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -44,6 +45,7 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     if (options.testSplit !== undefined) cliParams['test-split'] = options.testSplit;
     if (options.noPromote) cliParams['no-promote'] = true;
     if (options.dropMissingLabels) cliParams['drop-missing-labels'] = true;
+    if (options.weight) cliParams['weight'] = options.weight;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
 
@@ -121,6 +123,10 @@ export const trainTool = {
       dropMissingLabels: {
         type: 'boolean',
         description: 'Drop rows with missing label values before training',
+      },
+      weight: {
+        type: 'string',
+        description: 'Column whose values weight the rows — the relative frequency each row should have (1/π for a row sampled with probability π, lower for a less reliable label source). Never used as a feature; the test metrics are weighted too. Binary, multiclass and regression; refused with --balance, on the label, or on another task',
       },
     },
     required: ['projectPath'],
