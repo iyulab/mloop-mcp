@@ -16,7 +16,8 @@
 | `mloop_train` | Train model | `projectPath, dataFile?, label?, time?` |
 | `mloop_predict` | Run predictions | `projectPath, dataFile?` |
 | `mloop_list` | List experiments | `projectPath` |
-| `mloop_promote` | Promote to production (ID or auto: latest/best) | `projectPath, experimentId? \| latest? \| best?` |
+| `mloop_promote` | Promote to production (ID or auto: latest/best); refused by the quality gate unless `force` | `projectPath, experimentId? \| latest? \| best?, force?` |
+| `mloop_rollback` | Production back to the experiment it held before | `projectPath, to?` |
 | `mloop_compare` | Compare experiments | `projectPath, experiments[]` |
 | `mloop_status` | Project status | `projectPath` |
 | `mloop_evaluate` | Evaluate model | `projectPath` |

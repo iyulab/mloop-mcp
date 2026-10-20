@@ -9,6 +9,7 @@ import {
   predictTool, predict, predictSchema,
   listTool, list, listSchema,
   promoteTool, promote, promoteSchema,
+  rollbackTool, rollback, rollbackSchema,
   infoTool, info, infoSchema,
   statusTool, status, statusSchema,
   compareTool, compare, compareSchema,
@@ -73,6 +74,14 @@ export function createServer(): McpServer {
     promoteTool.description,
     promoteSchema.shape,
     async (params) => promote(params as Parameters<typeof promote>[0])
+  );
+
+  // Register mloop_rollback
+  server.tool(
+    rollbackTool.name,
+    rollbackTool.description,
+    rollbackSchema.shape,
+    async (params) => rollback(params as Parameters<typeof rollback>[0])
   );
 
   // Register mloop_info

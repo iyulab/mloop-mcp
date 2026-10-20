@@ -73,7 +73,8 @@ plugins:
 | `mloop_train` | Train ML models using AutoML |
 | `mloop_predict` | Run predictions with trained models |
 | `mloop_list` | List experiments and their metrics (structured JSON) |
-| `mloop_promote` | Promote an experiment to production (explicit ID, `latest`, or `best`) |
+| `mloop_promote` | Promote an experiment to production (explicit ID, `latest`, or `best`); a model the quality gate refuses needs `force` |
+| `mloop_rollback` | Return production to the experiment it held before (or `to` a former production experiment) |
 | `mloop_info` | Analyze and profile datasets |
 | `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
 | `mloop_detect` | One-shot time-series anomaly detection with SPC bounds — no training, no project required (mloop >= 0.21) |
