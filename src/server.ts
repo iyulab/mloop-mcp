@@ -36,6 +36,7 @@ import {
   autoTrainTool, autoTrain, autoTrainSchema,
   projectOverviewTool, projectOverview, projectOverviewSchema,
 } from './tools/index.js';
+import { packageVersion } from './package-info.js';
 
 /**
  * Create and configure the MCP server
@@ -43,7 +44,7 @@ import {
 export function createServer(): McpServer {
   const server = new McpServer({
     name: 'mloop-mcp',
-    version: '0.4.0',
+    version: packageVersion,
   });
 
   // === Existing tools ===

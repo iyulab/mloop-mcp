@@ -19,7 +19,8 @@
     "dev": "npm run build && npm run start",
     "clean": "rimraf build",
     "prepublishOnly": "npm run clean && npm run build",
-    "check:cli": "npm run build && node scripts/check-cli-options.mjs"
+    "check:cli": "npm run build && node scripts/check-cli-options.mjs",
+    "test": "npm run build && node --test"
   },
   "keywords": [
     "mcp",

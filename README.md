@@ -171,6 +171,9 @@ npm start
 # Test with MCP Inspector
 npx @modelcontextprotocol/inspector node build/index.js
 
+# Run the tests (builds first; starts the server over stdio)
+npm test
+
 # Check that every tool passes the CLI only options it has (needs the mloop CLI; pass its path if not on PATH)
 npm run check:cli -- /path/to/mloop
 ```

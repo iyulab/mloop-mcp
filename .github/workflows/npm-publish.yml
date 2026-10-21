@@ -10,6 +10,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -45,6 +46,10 @@ jobs:
       - name: Build
         if: steps.version-check.outputs.skip == 'false'
         run: npm run build
+
+      - name: Test
+        if: steps.version-check.outputs.skip == 'false'
+        run: node --test
 
       - name: Publish to npm
         if: steps.version-check.outputs.skip == 'false'
