@@ -13,19 +13,21 @@ export const exportOnnxSchema = z.object({
   modelName: z.string().optional().describe('Model name'),
   dataFile: z.string().optional().describe("A data file with the model's input columns (default: the experiment's training file)"),
   outputDir: z.string().optional().describe("Directory for model.onnx and model.onnx.json (default: the experiment's directory)"),
+  verify: z.boolean().optional().describe('Run the graph in ONNX Runtime and compare it with the model; a graph that disagrees is not kept'),
 });
 
 export type ExportOnnxParams = z.infer<typeof exportOnnxSchema>;
 
 export async function exportOnnx(params: ExportOnnxParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, modelName, dataFile, outputDir } = params;
+    const { projectPath, experimentId, modelName, dataFile, outputDir, verify } = params;
 
     const args: string[] = ['export', 'onnx'];
     if (experimentId) args.push(experimentId);
     if (modelName) args.push('--name', modelName);
     if (dataFile) args.push('--data', dataFile);
     if (outputDir) args.push('--output', outputDir);
+    if (verify) args.push('--verify');
     args.push('--json');
 
     const result = await executeMloop(args, { cwd: projectPath });
@@ -52,6 +54,7 @@ export const exportOnnxTool = {
       modelName: { type: 'string', description: 'Model name for namespacing' },
       dataFile: { type: 'string', description: "Data file with the model's input columns (default: the training file)" },
       outputDir: { type: 'string', description: "Output directory (default: the experiment's directory)" },
+      verify: { type: 'boolean', description: 'Run the graph in ONNX Runtime on up to 1,000 rows and compare it with the model (needs: mloop runtime install onnxruntime)' },
     },
     required: ['projectPath'],
   },
