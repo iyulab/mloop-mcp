@@ -12,6 +12,7 @@ export const thresholdSchema = z.object({
   experimentId: z.string().optional().describe('Experiment to set the threshold of (default: the production model)'),
   modelName: z.string().optional().describe('Model name'),
   precision: z.number().optional().describe('Target positive precision (above 0, at most 1): the lowest threshold reaching it on dataFile is chosen'),
+  precisionOf: z.string().optional().describe('The class whose precision is targeted, by its label value (default: the positive class) — the negative class too, when a wrong "no" is the costly answer'),
   dataFile: z.string().optional().describe('Labeled evaluation file the threshold is chosen on (required with precision)'),
   weight: z.string().optional().describe('Column that weights the rows'),
   clear: z.boolean().optional().describe('Remove the threshold: the model answers at 0.5 again'),
@@ -21,12 +22,13 @@ export type ThresholdParams = z.infer<typeof thresholdSchema>;
 
 export async function threshold(params: ThresholdParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, modelName, precision, dataFile, weight, clear } = params;
+    const { projectPath, experimentId, modelName, precision, precisionOf, dataFile, weight, clear } = params;
 
     const args: string[] = ['threshold'];
     if (experimentId) args.push(experimentId);
     if (modelName) args.push('--name', modelName);
     if (precision !== undefined) args.push('--precision', String(precision));
+    if (precisionOf) args.push('--precision-of', precisionOf);
     if (dataFile) args.push('--data', dataFile);
     if (weight) args.push('--weight', weight);
     if (clear) args.push('--clear');
@@ -47,7 +49,7 @@ export async function threshold(params: ThresholdParams): Promise<{ content: Arr
 
 export const thresholdTool = {
   name: 'mloop_threshold',
-  description: 'A binary classifier\'s decision threshold, as JSON. With precision and dataFile, chooses the lowest probability threshold whose positive precision reaches the target on those labeled rows (keeping the most recall) and writes it beside the model — predict, serve, evaluate and the gate then answer at it, and promote carries it. Without precision, shows the current one; with clear, removes it. Refused for a model that is not binary or gives no probability, or when no threshold reaches the precision (mloop >= 0.39).',
+  description: 'A binary classifier\'s decision threshold, as JSON. With precision and dataFile, chooses the probability threshold at which the precision of the positive class — or of precisionOf, the negative one included (mloop >= 0.40) — reaches the target on those labeled rows, keeping the most of that class\'s recall, and writes it beside the model — predict, serve, evaluate and the gate then answer at it, and promote carries it. Without precision, shows the current one; with clear, removes it. Refused for a model that is not binary or gives no probability, or when no threshold reaches the precision (mloop >= 0.39).',
   inputSchema: {
     type: 'object',
     properties: {
@@ -55,6 +57,7 @@ export const thresholdTool = {
       experimentId: { type: 'string', description: 'Experiment (default: production)' },
       modelName: { type: 'string', description: 'Model name for namespacing' },
       precision: { type: 'number', description: 'Target positive precision, above 0 and at most 1' },
+      precisionOf: { type: 'string', description: 'Class whose precision is targeted, by label value (default: positive class)' },
       dataFile: { type: 'string', description: 'Labeled evaluation file (required with precision)' },
       weight: { type: 'string', description: 'Column that weights the rows' },
       clear: { type: 'boolean', description: 'Remove the threshold' },
