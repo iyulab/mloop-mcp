@@ -28,7 +28,7 @@
 | `mloop_feedback` | Manage feedback | `projectPath, action` |
 | `mloop_sample` | Data sampling | `projectPath, action` |
 | `mloop_trigger` | Check retrain triggers | `projectPath` |
-| `mloop_drift` | Input drift per column (PSI) and per slice | `projectPath` |
+| `mloop_drift` | Input drift per column (PSI), answer drift, and per slice | `projectPath` |
 | `mloop_serve` | Start API server | `projectPath` |
 
 ## Recommended Workflows
