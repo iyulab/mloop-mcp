@@ -22,6 +22,8 @@ export const trainSchema = z.object({
   noPromote: z.boolean().optional().describe('Skip automatic promotion to production'),
   dropMissingLabels: z.boolean().optional().describe('Drop rows with missing label values before training'),
   weight: z.string().optional().describe('Column that weights the rows (e.g. 1/π for sampled labels); never a feature'),
+  additionalDataFiles: z.array(z.string()).optional().describe(
+    'Files merged after dataFile (e.g. a retraining set from mloop_sample create); a file without the weight column counts its rows 1'),
   portable: z.boolean().optional().describe('Train only with steps ONNX can express, so mloop_export_onnx can export the model'),
 });
 
@@ -32,8 +34,10 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     const { projectPath, dataFile, label, ...options } = params;
 
     // Build positional arguments
+    // More than one file goes through --data, which merges them; one file is the positional argument.
+    const more = options.additionalDataFiles ?? [];
     const positional: string[] = [];
-    if (dataFile) positional.push(dataFile);
+    if (dataFile && more.length === 0) positional.push(dataFile);
 
     // Map parameters to CLI flags
     const cliParams: Record<string, unknown> = {};
@@ -50,6 +54,7 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     if (options.portable) cliParams['portable'] = true;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
+    if (more.length > 0) args.push('--data', dataFile ?? 'datasets/train.csv', ...more);
 
     const result = await executeMloop(args, {
       cwd: projectPath,
@@ -129,6 +134,11 @@ export const trainTool = {
       weight: {
         type: 'string',
         description: 'Column whose values weight the rows — the relative frequency each row should have (1/π for a row sampled with probability π, lower for a less reliable label source). Never used as a feature; the test metrics are weighted too. Binary, multiclass and regression; refused with --balance, on the label, or on another task',
+      },
+      additionalDataFiles: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Files merged after dataFile (e.g. a retraining set from mloop_sample create); a file without the weight column counts its rows 1',
       },
       portable: {
         type: 'boolean',
