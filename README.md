@@ -84,7 +84,7 @@ plugins:
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only, no data change) as structured JSON |
 | `mloop_status` | Show project status |
 | `mloop_compare` | Compare multiple experiments |
-| `mloop_evaluate` | Evaluate model performance |
+| `mloop_evaluate` | Evaluate model performance as JSON; with `against`, compare two models row by row on the same rows (mloop >= 0.39) |
 | `mloop_serve` | Start REST API server |
 
 ## Tool Examples

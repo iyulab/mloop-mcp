@@ -21,7 +21,7 @@
 | `mloop_export_onnx` | Model as ONNX + manifest for runtimes without ML.NET | `projectPath, experimentId?, dataFile?, outputDir?` |
 | `mloop_compare` | Compare experiments | `projectPath, experiments[]` |
 | `mloop_status` | Project status | `projectPath` |
-| `mloop_evaluate` | Evaluate model | `projectPath` |
+| `mloop_evaluate` | Evaluate model; `against` compares a candidate with production row by row | `projectPath` |
 | `mloop_validate` | Validate config | `projectPath` |
 | `mloop_prep` | Run preprocessing | `projectPath` |
 | `mloop_logs` | View prediction logs | `projectPath` |
