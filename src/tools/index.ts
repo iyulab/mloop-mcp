@@ -23,6 +23,7 @@ export { logsTool, logs, logsSchema, type LogsParams } from './logs.js';
 export { feedbackTool, feedback, feedbackSchema, type FeedbackParams } from './feedback.js';
 export { sampleTool, sample, sampleSchema, type SampleParams } from './sample.js';
 export { triggerTool, trigger, triggerSchema, type TriggerParams } from './trigger.js';
+export { driftTool, drift, driftSchema, type DriftParams } from './drift.js';
 export { analyzeTool, analyze, analyzeSchema, type AnalyzeParams } from './analyze.js';
 export { detectTool, detect, detectSchema, type DetectParams } from './detect.js';
 export { prepPlanTool, prepPlan, prepPlanSchema, type PrepPlanParams } from './prep-plan.js';
@@ -57,6 +58,7 @@ export const allTools = [
   { name: 'mloop_feedback', module: () => import('./feedback.js') },
   { name: 'mloop_sample', module: () => import('./sample.js') },
   { name: 'mloop_trigger', module: () => import('./trigger.js') },
+  { name: 'mloop_drift', module: () => import('./drift.js') },
   { name: 'mloop_analyze', module: () => import('./analyze.js') },
   { name: 'mloop_detect', module: () => import('./detect.js') },
   { name: 'mloop_prep_plan', module: () => import('./prep-plan.js') },

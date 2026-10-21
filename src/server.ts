@@ -24,6 +24,7 @@ import {
   feedbackTool, feedback, feedbackSchema,
   sampleTool, sample, sampleSchema,
   triggerTool, trigger, triggerSchema,
+  driftTool, drift, driftSchema,
   analyzeTool, analyze, analyzeSchema,
   detectTool, detect, detectSchema,
   prepPlanTool, prepPlan, prepPlanSchema,
@@ -189,6 +190,14 @@ export function createServer(): McpServer {
     triggerTool.description,
     triggerSchema.shape,
     async (params) => trigger(params as Parameters<typeof trigger>[0])
+  );
+
+  // Register mloop_drift
+  server.tool(
+    driftTool.name,
+    driftTool.description,
+    driftSchema.shape,
+    async (params) => drift(params as Parameters<typeof drift>[0])
   );
 
   // Register mloop_analyze

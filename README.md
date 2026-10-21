@@ -78,6 +78,7 @@ plugins:
 | `mloop_export_onnx` | Model as ONNX + manifest (inputs and their data columns, outputs, classes, hashes) for runtimes without ML.NET |
 | `mloop_info` | Analyze and profile datasets |
 | `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
+| `mloop_drift` | Recent inputs vs the training data — PSI per column, per slice, as JSON (mloop >= 0.38) |
 | `mloop_detect` | One-shot time-series anomaly detection with SPC bounds — no training, no project required (mloop >= 0.21) |
 | `mloop_prep_plan` | Declare a preprocessing step in mloop.yaml (policy only, no data change) as structured JSON |
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only, no data change) as structured JSON |

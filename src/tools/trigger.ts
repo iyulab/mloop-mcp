@@ -18,6 +18,7 @@ export async function trigger(params: TriggerParams): Promise<{ content: Array<{
   try {
     const cliParams: Record<string, unknown> = {};
     if (params.modelName) cliParams['name'] = params.modelName;
+    cliParams['json'] = true;
 
     const args = buildArgsWithPositional('trigger', ['check'], cliParams);
     const result = await executeMloop(args, { cwd: params.projectPath });
@@ -42,7 +43,7 @@ export async function trigger(params: TriggerParams): Promise<{ content: Array<{
 
 export const triggerTool = {
   name: 'mloop_trigger',
-  description: 'Check if retraining triggers are activated. Evaluates model drift, data freshness, and feedback-based triggers.',
+  description: 'Check whether retraining is due, as JSON: each default condition — feedback accuracy, feedback volume, time since training and input drift (PSI of the production model\'s logged inputs against its training data, met at 0.25) — with its threshold, current value, whether it is met and why; the drift condition carries every column\'s PSI under drift. A condition that could not be measured says so in details.',
   inputSchema: {
     type: 'object',
     properties: {
