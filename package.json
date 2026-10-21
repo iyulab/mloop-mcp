@@ -18,7 +18,8 @@
     "start": "node build/index.js",
     "dev": "npm run build && npm run start",
     "clean": "rimraf build",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "check:cli": "npm run build && node scripts/check-cli-options.mjs"
   },
   "keywords": [
     "mcp",

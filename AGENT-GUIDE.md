@@ -10,7 +10,7 @@
 | `mloop_init` | Initialize project | `projectPath, task` |
 | `mloop_info` | Profile dataset | `dataFile, projectPath?` |
 | `mloop_analyze` | One read-only EDA aspect as JSON | `aspect, dataFile, label?` |
-| `mloop_detect` | One-shot TS-anomaly detection + SPC bounds (no training) | `dataPath, column?, threshold?, sensitivity?, period?` |
+| `mloop_detect` | One-shot TS-anomaly detection + SPC bounds (no training) | `dataPath, column?, threshold?, sensitivity?` |
 | `mloop_prep_plan` | Declare a prep step in mloop.yaml (policy only) as JSON | `projectPath, set?/remove?, columns?` |
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only) as JSON | `projectPath, drop?/keep?/reset?` |
 | `mloop_train` | Train model | `projectPath, dataFile?, label?, time?` |

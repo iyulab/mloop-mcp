@@ -11,9 +11,8 @@ import * as path from 'node:path';
 export const detectSchema = z.object({
   dataPath: z.string().describe('Path to the CSV file containing the time series'),
   column: z.string().optional().describe('Value column to monitor (auto-selected when the CSV has a single column)'),
-  threshold: z.number().optional().describe('Anomaly decision threshold in [0, 1] (default 0.3)'),
-  sensitivity: z.number().optional().describe('Detection margin sensitivity in [0, 100] — larger = tighter margin, more anomalies kept; does not affect control limits (default 99)'),
-  period: z.number().optional().describe('Seasonality period in points (default: auto-detect; 0 = non-seasonal)'),
+  threshold: z.number().positive().optional().describe("Score above which a point is an anomaly (> 0; the score is a point's saliency relative to the points before it; default 3)"),
+  sensitivity: z.number().gt(0).lt(100).optional().describe('Coverage of the control limits in percent (0-100, exclusive; 99.73 = 3 sigma; default 99.73)'),
   output: z.string().optional().describe('Also write the full per-point result to this CSV file'),
 });
 
@@ -21,13 +20,12 @@ export type DetectParams = z.infer<typeof detectSchema>;
 
 export async function detect(params: DetectParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { dataPath, column, threshold, sensitivity, period, output } = params;
+    const { dataPath, column, threshold, sensitivity, output } = params;
 
     const cliParams: Record<string, unknown> = {};
     if (column) cliParams['column'] = column;
     if (threshold !== undefined) cliParams['threshold'] = threshold;
     if (sensitivity !== undefined) cliParams['sensitivity'] = sensitivity;
-    if (period !== undefined) cliParams['period'] = period;
     if (output) cliParams['output'] = output;
     cliParams['json'] = true;
 
@@ -59,7 +57,7 @@ export async function detect(params: DetectParams): Promise<{ content: Array<{ t
 
 export const detectTool = {
   name: 'mloop_detect',
-  description: 'One-shot time-series anomaly detection over an entire CSV series (SR-CNN, no training, no MLoop project required). Every point returns an anomaly verdict, score, an expectedValue, control limits (controlLower/controlUpper — the chartable band: normal points lie inside it, scaled by the residual dispersion) and the detection margin (marginLower/marginUpper — the gate behind the verdict: isAnomaly implies the value is outside it, but not the converse). Use this instead of train+predict when analyzing a whole series once.',
+  description: 'One-shot time-series anomaly detection over an entire CSV series (spectral residual, no training, no MLoop project required). Every point returns an anomaly verdict (isAnomaly), its score, an expectedValue and control limits (controlLower/controlUpper — the chartable band normal points lie inside); nearEdge marks points too close to the end of the series to judge as surely. Use this instead of train+predict when analyzing a whole series once.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -73,15 +71,11 @@ export const detectTool = {
       },
       threshold: {
         type: 'number',
-        description: 'Anomaly decision threshold in [0, 1] (default 0.3)',
+        description: "Score above which a point is an anomaly (> 0; the score is a point's saliency relative to the points before it; default 3)",
       },
       sensitivity: {
         type: 'number',
-        description: 'Detection margin sensitivity in [0, 100] — larger = tighter margin, more anomalies kept; does not affect control limits (default 99)',
-      },
-      period: {
-        type: 'number',
-        description: 'Seasonality period in points (default: auto-detect; 0 = non-seasonal)',
+        description: 'Coverage of the control limits in percent (0-100, exclusive; 99.73 = 3 sigma; default 99.73)',
       },
       output: {
         type: 'string',

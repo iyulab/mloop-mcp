@@ -170,7 +170,14 @@ npm start
 
 # Test with MCP Inspector
 npx @modelcontextprotocol/inspector node build/index.js
+
+# Check that every tool passes the CLI only options it has (needs the mloop CLI; pass its path if not on PATH)
+npm run check:cli -- /path/to/mloop
 ```
+
+`check:cli` calls each tool with its schema filled in against a stand-in that records the command line, then compares
+every option and argument with the real CLI's `--help`. Run it before a release and whenever a tool or the CLI's
+options change — a tool passing an option the CLI does not have fails only when an agent calls it.
 
 ## Architecture
 
