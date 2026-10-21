@@ -22,6 +22,7 @@ export const trainSchema = z.object({
   noPromote: z.boolean().optional().describe('Skip automatic promotion to production'),
   dropMissingLabels: z.boolean().optional().describe('Drop rows with missing label values before training'),
   weight: z.string().optional().describe('Column that weights the rows (e.g. 1/π for sampled labels); never a feature'),
+  portable: z.boolean().optional().describe('Train only with steps ONNX can express, so mloop_export_onnx can export the model'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -46,6 +47,7 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     if (options.noPromote) cliParams['no-promote'] = true;
     if (options.dropMissingLabels) cliParams['drop-missing-labels'] = true;
     if (options.weight) cliParams['weight'] = options.weight;
+    if (options.portable) cliParams['portable'] = true;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
 
@@ -127,6 +129,10 @@ export const trainTool = {
       weight: {
         type: 'string',
         description: 'Column whose values weight the rows — the relative frequency each row should have (1/π for a row sampled with probability π, lower for a less reliable label source). Never used as a feature; the test metrics are weighted too. Binary, multiclass and regression; refused with --balance, on the label, or on another task',
+      },
+      portable: {
+        type: 'boolean',
+        description: 'Train only with steps an ONNX runtime computes exactly (text columns as character n-gram counts), so mloop_export_onnx can export the model. Binary, multiclass and regression',
       },
     },
     required: ['projectPath'],

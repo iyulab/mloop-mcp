@@ -43,7 +43,7 @@ export async function exportOnnx(params: ExportOnnxParams): Promise<{ content: A
 
 export const exportOnnxTool = {
   name: 'mloop_export_onnx',
-  description: 'Write a trained model (binary, multiclass or regression) as an ONNX graph plus a manifest (model.onnx.json) naming each graph input and the data columns behind it, the outputs, the classes, the metrics and SHA-256 hashes — for runtimes without ML.NET. A model that featurizes a string column as free text is refused with the columns named; a category column exports once declared `type: categorical` in mloop.yaml and retrained.',
+  description: 'Write a trained model (binary, multiclass or regression) as an ONNX graph plus a manifest (model.onnx.json) naming each graph input and the data columns behind it, the outputs, the classes, the metrics and SHA-256 hashes — for runtimes without ML.NET. A model that featurizes a free-text column with the ML.NET text featurizer is refused with the columns named — train it with `portable: true` (mloop_train) to export it; a category column exports as is.',
   inputSchema: {
     type: 'object',
     properties: {
