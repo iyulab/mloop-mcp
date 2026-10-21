@@ -11,6 +11,7 @@ import {
   promoteTool, promote, promoteSchema,
   rollbackTool, rollback, rollbackSchema,
   thresholdTool, threshold, thresholdSchema,
+  calibrateTool, calibrate, calibrateSchema,
   exportOnnxTool, exportOnnx, exportOnnxSchema,
   infoTool, info, infoSchema,
   statusTool, status, statusSchema,
@@ -93,6 +94,14 @@ export function createServer(): McpServer {
     thresholdTool.description,
     thresholdSchema.shape,
     async (params) => threshold(params as Parameters<typeof threshold>[0])
+  );
+
+  // Register mloop_calibrate
+  server.tool(
+    calibrateTool.name,
+    calibrateTool.description,
+    calibrateSchema.shape,
+    async (params) => calibrate(params as Parameters<typeof calibrate>[0])
   );
 
   // Register mloop_export_onnx

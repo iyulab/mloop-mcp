@@ -76,6 +76,7 @@ plugins:
 | `mloop_promote` | Promote an experiment to production (explicit ID, `latest`, or `best`); a model the quality gate refuses needs `force`; `history` lists every change of production with the gate outcome (mloop >= 0.39) |
 | `mloop_rollback` | Return production to the experiment it held before (or `to` a former production experiment) |
 | `mloop_threshold` | Choose a binary model's decision threshold for a target precision on labeled rows, show it, or clear it (mloop >= 0.39) |
+| `mloop_calibrate` | Fit a classifier's probability calibration (binary platt · isotonic, multiclass temperature) on labeled rows without retraining, show it, or clear it (mloop >= 0.40) |
 | `mloop_export_onnx` | Model as ONNX + manifest (inputs and their data columns, outputs, classes, hashes) for runtimes without ML.NET |
 | `mloop_info` | Analyze and profile datasets |
 | `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
