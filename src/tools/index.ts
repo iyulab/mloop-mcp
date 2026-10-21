@@ -8,6 +8,7 @@ export { predictTool, predict, predictSchema, type PredictParams } from './predi
 export { listTool, list, listSchema, type ListParams } from './list.js';
 export { promoteTool, promote, promoteSchema, type PromoteParams } from './promote.js';
 export { rollbackTool, rollback, rollbackSchema, type RollbackParams } from './rollback.js';
+export { exportOnnxTool, exportOnnx, exportOnnxSchema, type ExportOnnxParams } from './export-onnx.js';
 export { infoTool, info, infoSchema, type InfoParams } from './info.js';
 export { statusTool, status, statusSchema, type StatusParams } from './status.js';
 export { compareTool, compare, compareSchema, type CompareParams } from './compare.js';
@@ -42,6 +43,7 @@ export const allTools = [
   { name: 'mloop_list', module: () => import('./list.js') },
   { name: 'mloop_promote', module: () => import('./promote.js') },
   { name: 'mloop_rollback', module: () => import('./rollback.js') },
+  { name: 'mloop_export_onnx', module: () => import('./export-onnx.js') },
   { name: 'mloop_info', module: () => import('./info.js') },
   { name: 'mloop_status', module: () => import('./status.js') },
   { name: 'mloop_compare', module: () => import('./compare.js') },

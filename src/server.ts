@@ -10,6 +10,7 @@ import {
   listTool, list, listSchema,
   promoteTool, promote, promoteSchema,
   rollbackTool, rollback, rollbackSchema,
+  exportOnnxTool, exportOnnx, exportOnnxSchema,
   infoTool, info, infoSchema,
   statusTool, status, statusSchema,
   compareTool, compare, compareSchema,
@@ -82,6 +83,14 @@ export function createServer(): McpServer {
     rollbackTool.description,
     rollbackSchema.shape,
     async (params) => rollback(params as Parameters<typeof rollback>[0])
+  );
+
+  // Register mloop_export_onnx
+  server.tool(
+    exportOnnxTool.name,
+    exportOnnxTool.description,
+    exportOnnxSchema.shape,
+    async (params) => exportOnnx(params as Parameters<typeof exportOnnx>[0])
   );
 
   // Register mloop_info

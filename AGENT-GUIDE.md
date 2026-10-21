@@ -18,6 +18,7 @@
 | `mloop_list` | List experiments | `projectPath` |
 | `mloop_promote` | Promote to production (ID or auto: latest/best); refused by the quality gate unless `force` | `projectPath, experimentId? \| latest? \| best?, force?` |
 | `mloop_rollback` | Production back to the experiment it held before | `projectPath, to?` |
+| `mloop_export_onnx` | Model as ONNX + manifest for runtimes without ML.NET | `projectPath, experimentId?, dataFile?, outputDir?` |
 | `mloop_compare` | Compare experiments | `projectPath, experiments[]` |
 | `mloop_status` | Project status | `projectPath` |
 | `mloop_evaluate` | Evaluate model | `projectPath` |
