@@ -81,7 +81,7 @@ export async function evaluate(params: EvaluateParams): Promise<{ content: Array
 
 export const evaluateTool = {
   name: 'mloop_evaluate',
-  description: 'Evaluate a model\'s performance on test data, as JSON: test metrics beside the training metrics, per slice with sliceBy, weighted with weight. With against (an experiment id or "production"), the other model is scored on the same rows and weights and the two are compared row by row: comparison.metrics, and comparison.paired — the per-row loss (error_rate for a classifier, squared_error for a regressor) of each, their difference (candidate − baseline), a 95% paired bootstrap interval, and verdict CandidateBetter / BaselineBetter / Indistinguishable. Use it to decide whether a staging candidate should replace production.',
+  description: 'Evaluate a model\'s performance on test data, as JSON: test metrics beside the training metrics, per slice with sliceBy, weighted with weight. For a classifier, confusion: classes and counts[actual][predicted] (weighted sums under weight; per slice too) — read any class-set rate from it, e.g. the share of a must-catch class answered as a harmless one (mloop >= 0.39). With against (an experiment id or "production"), the other model is scored on the same rows and weights and the two are compared row by row: comparison.metrics, and comparison.paired — the per-row loss (error_rate for a classifier, squared_error for a regressor) of each, their difference (candidate − baseline), a 95% paired bootstrap interval, and verdict CandidateBetter / BaselineBetter / Indistinguishable. Use it to decide whether a staging candidate should replace production.',
   inputSchema: {
     type: 'object',
     properties: {
