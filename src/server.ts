@@ -10,6 +10,7 @@ import {
   listTool, list, listSchema,
   promoteTool, promote, promoteSchema,
   rollbackTool, rollback, rollbackSchema,
+  thresholdTool, threshold, thresholdSchema,
   exportOnnxTool, exportOnnx, exportOnnxSchema,
   infoTool, info, infoSchema,
   statusTool, status, statusSchema,
@@ -84,6 +85,14 @@ export function createServer(): McpServer {
     rollbackTool.description,
     rollbackSchema.shape,
     async (params) => rollback(params as Parameters<typeof rollback>[0])
+  );
+
+  // Register mloop_threshold
+  server.tool(
+    thresholdTool.name,
+    thresholdTool.description,
+    thresholdSchema.shape,
+    async (params) => threshold(params as Parameters<typeof threshold>[0])
   );
 
   // Register mloop_export_onnx
