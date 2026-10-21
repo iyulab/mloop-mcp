@@ -27,8 +27,8 @@
 | `mloop_validate` | Validate config | `projectPath` |
 | `mloop_prep` | Run preprocessing | `projectPath` |
 | `mloop_logs` | View prediction logs | `projectPath` |
-| `mloop_feedback` | Manage feedback | `projectPath, action` |
-| `mloop_sample` | Data sampling | `projectPath, action` |
+| `mloop_feedback` | Record the actual value of a logged prediction (`source`, `weight` = 1/p for a row reviewed with probability p), list it, or measure accuracy with it | `projectPath, action` |
+| `mloop_sample` | A retraining dataset from a model's logged predictions and feedback (feedback under the model's label, weighted when feedback is), or a sample of a CSV | `projectPath, action` |
 | `mloop_trigger` | Check retrain triggers | `projectPath` |
 | `mloop_drift` | Input drift per column (PSI), answer drift, and per slice | `projectPath` |
 | `mloop_serve` | Start API server | `projectPath` |

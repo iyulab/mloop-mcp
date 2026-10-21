@@ -1,5 +1,5 @@
 /**
- * mloop_sample tool - Data sampling operations
+ * mloop_sample tool - Sample data from CSV files or prediction logs
  */
 
 import { z } from 'zod';
@@ -10,24 +10,38 @@ import { formatError } from '../utils/errors.js';
 export const sampleSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   action: z.enum(['create', 'stats']).describe('Sample action to perform'),
-  dataFile: z.string().optional().describe('Data file to sample from'),
-  size: z.number().positive().optional().describe('Sample size (number of rows)'),
-  strategy: z.string().optional().describe('Sampling strategy (e.g., "random", "stratified")'),
+  modelName: z.string().optional().describe(
+    'Model whose logged predictions and feedback to sample ("create": a retraining dataset — the feedback under the model\'s label, weighted when feedback carries weights; "stats": default "default")'),
+  dataFile: z.string().optional().describe('CSV file to sample from instead of prediction logs ("create" only)'),
+  size: z.number().int().positive().optional().describe('Number of rows to sample (default 1000)'),
+  strategy: z.string().optional().describe(
+    'Sampling strategy — logs: random, recent, feedback-priority, stratified, low-confidence; CSV: random, head, stratified'),
+  label: z.string().optional().describe('Label column for stratified CSV sampling'),
+  output: z.string().optional().describe('Output CSV path'),
 });
 
 export type SampleParams = z.infer<typeof sampleSchema>;
 
+/** The CLI arguments for one call — the option names `mloop sample <action>` accepts. */
+export function sampleArgs(params: SampleParams): string[] {
+  const cliParams: Record<string, unknown> = {};
+  if (params.action === 'create') {
+    cliParams['from'] = params.dataFile;
+    cliParams['model'] = params.dataFile ? undefined : (params.modelName ?? 'default');
+    cliParams['rows'] = params.size;
+    cliParams['strategy'] = params.strategy;
+    cliParams['label'] = params.label;
+    cliParams['output'] = params.output;
+  } else {
+    cliParams['model'] = params.modelName;
+    cliParams['json'] = true;
+  }
+  return buildArgsWithPositional('sample', [params.action], cliParams);
+}
+
 export async function sample(params: SampleParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const positional: string[] = [params.action];
-    if (params.dataFile) positional.push(params.dataFile);
-
-    const cliParams: Record<string, unknown> = {};
-    if (params.size) cliParams['size'] = params.size;
-    if (params.strategy) cliParams['strategy'] = params.strategy;
-
-    const args = buildArgsWithPositional('sample', positional, cliParams);
-    const result = await executeMloop(args, { cwd: params.projectPath });
+    const result = await executeMloop(sampleArgs(params), { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);
 
     return {
@@ -49,7 +63,7 @@ export async function sample(params: SampleParams): Promise<{ content: Array<{ t
 
 export const sampleTool = {
   name: 'mloop_sample',
-  description: 'Create data samples or view sampling statistics. Supports random and stratified sampling strategies.',
+  description: 'Create a sampled dataset — from a model\'s logged predictions and feedback (a retraining dataset: feedback under the model\'s label, with a weight column when feedback carries weights) or from a CSV file — or view sampling statistics.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -62,17 +76,29 @@ export const sampleTool = {
         enum: ['create', 'stats'],
         description: 'Sample action: "create" to generate a sample, "stats" to view statistics',
       },
+      modelName: {
+        type: 'string',
+        description: 'Model whose logged predictions and feedback to sample (default: "default")',
+      },
       dataFile: {
         type: 'string',
-        description: 'Data file to sample from',
+        description: 'CSV file to sample from instead of prediction logs ("create" only)',
       },
       size: {
         type: 'number',
-        description: 'Sample size (number of rows)',
+        description: 'Number of rows to sample (default 1000)',
       },
       strategy: {
         type: 'string',
-        description: 'Sampling strategy (e.g., "random", "stratified")',
+        description: 'Sampling strategy — logs: random, recent, feedback-priority, stratified, low-confidence; CSV: random, head, stratified',
+      },
+      label: {
+        type: 'string',
+        description: 'Label column for stratified CSV sampling',
+      },
+      output: {
+        type: 'string',
+        description: 'Output CSV path',
       },
     },
     required: ['projectPath', 'action'],
