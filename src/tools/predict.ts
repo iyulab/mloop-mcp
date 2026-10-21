@@ -11,6 +11,8 @@ export const predictSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   dataFile: z.string().optional().describe('Prediction data file (default: datasets/predict.csv)'),
   modelName: z.string().optional().describe('Model name'),
+  experimentId: z.string().optional()
+    .describe('Predict with this experiment (e.g. a staging candidate) instead of production — production does not move'),
   output: z.string().optional().describe('Output file path'),
   log: z.boolean().optional().describe('Enable prediction logging'),
   unknownStrategy: z.enum(['auto', 'error', 'use-most-frequent', 'use-missing']).optional()
@@ -21,7 +23,7 @@ export type PredictParams = z.infer<typeof predictSchema>;
 
 export async function predict(params: PredictParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, output, log, unknownStrategy } = params;
+    const { projectPath, dataFile, modelName, experimentId, output, log, unknownStrategy } = params;
 
     // dataFile is a positional argument
     const positional: string[] = [];
@@ -29,6 +31,7 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
 
     const cliParams: Record<string, unknown> = {};
     if (modelName) cliParams['name'] = modelName;
+    if (experimentId) cliParams['experiment'] = experimentId;
     if (output) cliParams['output'] = output;
     if (log) cliParams['log'] = true;
     if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
@@ -77,7 +80,7 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
 
 export const predictTool = {
   name: 'mloop_predict',
-  description: 'Run predictions using a trained model. Uses production model by default.',
+  description: 'Run predictions using a trained model. Uses production model by default; `experimentId` predicts with that experiment instead (a shadow prediction — production does not move). The JSON names the model that answered in `experimentId`.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -92,6 +95,10 @@ export const predictTool = {
       modelName: {
         type: 'string',
         description: 'Model name to use for prediction',
+      },
+      experimentId: {
+        type: 'string',
+        description: 'Experiment to predict with instead of production (e.g. a staging candidate, "exp-003"). Production does not move; logged rows carry this id.',
       },
       output: {
         type: 'string',

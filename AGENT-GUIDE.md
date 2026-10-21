@@ -14,7 +14,7 @@
 | `mloop_prep_plan` | Declare a prep step in mloop.yaml (policy only) as JSON | `projectPath, set?/remove?, columns?` |
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only) as JSON | `projectPath, drop?/keep?/reset?` |
 | `mloop_train` | Train model | `projectPath, dataFile?, label?, time?` |
-| `mloop_predict` | Run predictions | `projectPath, dataFile?` |
+| `mloop_predict` | Run predictions (production, or a candidate by `experimentId`) | `projectPath, dataFile?, experimentId?` |
 | `mloop_list` | List experiments | `projectPath` |
 | `mloop_promote` | Promote to production (ID or auto: latest/best); refused by the quality gate unless `force` | `projectPath, experimentId? \| latest? \| best?, force?` |
 | `mloop_rollback` | Production back to the experiment it held before | `projectPath, to?` |
