@@ -14,13 +14,28 @@ export const promoteSchema = z.object({
   best: z.boolean().optional().describe('Promote the completed experiment with the best metric (direction-aware)'),
   modelName: z.string().optional().describe('Model name'),
   force: z.boolean().optional().describe('Skip confirmation, and promote a model the quality gate refuses'),
+  history: z.boolean().optional().describe('List every change of production instead of promoting (mloop >= 0.39)'),
 });
 
 export type PromoteParams = z.infer<typeof promoteSchema>;
 
 export async function promote(params: PromoteParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, latest, best, modelName, force } = params;
+    const { projectPath, experimentId, latest, best, modelName, force, history } = params;
+
+    // The history changes nothing and takes no selector.
+    if (history) {
+      if (experimentId || latest || best || force) {
+        return {
+          content: [{ type: 'text', text: 'history lists the promotions and changes nothing: it takes no experimentId, latest, best or force.' }],
+          isError: true,
+        };
+      }
+      const args = ['promote', '--history', '--json'];
+      if (modelName) args.push('--name', modelName);
+      const result = await executeMloop(args, { cwd: projectPath });
+      return { content: [{ type: 'text', text: parseCliOutput(result.stdout) || 'No promotion history.' }] };
+    }
 
     // Mirror the CLI's selector contract client-side so the agent gets an immediate, clear error.
     const selectors = (experimentId ? 1 : 0) + (latest ? 1 : 0) + (best ? 1 : 0);
@@ -70,7 +85,7 @@ export async function promote(params: PromoteParams): Promise<{ content: Array<{
 
 export const promoteTool = {
   name: 'mloop_promote',
-  description: 'Promote an experiment to production. Select by explicit ID, or auto-select with latest (newest completed) / best (best metric, direction-aware). The promoted model will be used for predictions.',
+  description: 'Promote an experiment to production. Select by explicit ID, or auto-select with latest (newest completed) / best (best metric, direction-aware). The promoted model will be used for predictions. With history, lists every change of production instead — experiment, what it replaced, action (promote / auto-promote / rollback), the quality gate outcome (passed / forced / not-applied) and the metric value (mloop >= 0.39).',
   inputSchema: {
     type: 'object',
     properties: {
@@ -97,6 +112,10 @@ export const promoteTool = {
       force: {
         type: 'boolean',
         description: 'Skip the confirmation prompt, and promote a model the quality gate refuses (without it, such a model is refused with the reason)',
+      },
+      history: {
+        type: 'boolean',
+        description: 'List every change of production instead of promoting (mloop >= 0.39)',
       },
     },
     required: ['projectPath'],
