@@ -72,6 +72,14 @@ function help(path) {
       text = execFileSync(realMloop, [...path, '--help'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     } catch (e) {
       text = (e.stdout ?? '') + (e.stderr ?? '');
+      if (e.code === 'ENOENT') text = '';
+    }
+    // A guard that cannot read the CLI must say so, not report every option as unknown: without a
+    // `mloop` on PATH this used to print one "mismatch" per option — 226 of them — instead of the cause.
+    if (!/^Usage:/m.test(text)) {
+      console.error(`Cannot read the help of \`mloop ${key}\` from '${realMloop}'. Pass the CLI to check against: `
+        + 'node scripts/check-cli-options.mjs <path-to-mloop>.');
+      process.exit(2);
     }
     const options = new Set([...text.matchAll(/(?:^|[\s,])(--[a-z][a-z0-9-]*)/gm)].map(m => m[1]));
     const subcommands = new Set();
