@@ -43,6 +43,10 @@ jobs:
         if: steps.version-check.outputs.skip == 'false'
         run: npm ci
 
+      - name: Audit runtime dependencies
+        if: steps.version-check.outputs.skip == 'false'
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Build
         if: steps.version-check.outputs.skip == 'false'
         run: npm run build
