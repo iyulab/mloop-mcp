@@ -18,7 +18,7 @@ npx @iyulab/mloop-mcp
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - MLoop CLI installed and available in PATH
   ```bash
   dotnet tool install -g mloop
