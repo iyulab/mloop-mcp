@@ -16,6 +16,9 @@ Or run directly with npx:
 npx @iyulab/mloop-mcp
 ```
 
+The server speaks MCP over stdio in both protocol eras: a client opening with `initialize` (2025-11-25 and
+earlier) and a 2026-07-28 client opening with `server/discover`.
+
 ## Prerequisites
 
 - Node.js 22+

@@ -5,28 +5,19 @@
  * Exposes MLoop ML.NET MLOps capabilities via Model Context Protocol
  */
 
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { createServer } from './server.js';
 
-async function main(): Promise<void> {
-  const server = createServer();
-  const transport = new StdioServerTransport();
+// serveStdio answers both protocol eras on one stdin/stdout: a client opening with `initialize`
+// (2025-11-25 and earlier) and a 2026-07-28 client (no handshake, `server/discover`) alike.
+const connection = serveStdio(() => createServer(), {
+  onerror: (error) => console.error('mloop-mcp:', error),
+});
 
-  await server.connect(transport);
-
-  // Handle graceful shutdown
-  process.on('SIGINT', async () => {
-    await server.close();
-    process.exit(0);
-  });
-
-  process.on('SIGTERM', async () => {
-    await server.close();
+// Handle graceful shutdown
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, async () => {
+    await connection.close();
     process.exit(0);
   });
 }
-
-main().catch((error: unknown) => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
