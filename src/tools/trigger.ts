@@ -43,7 +43,7 @@ export async function trigger(params: TriggerParams): Promise<{ content: Array<{
 
 export const triggerTool = {
   name: 'mloop_trigger',
-  description: 'Check whether retraining is due, as JSON: each default condition — feedback accuracy, feedback volume, time since training and input drift (PSI of the production model\'s logged inputs against its training data, met at 0.25) — with its threshold, current value, whether it is met and why; the drift condition carries every column\'s PSI under drift. A condition that could not be measured says so in details.',
+  description: 'Check whether retraining is due, as JSON: each default condition — feedback accuracy (the production experiment\'s own answers, met once the drop is established: at least 30 rows of feedback and the 95% interval\'s upper end below the threshold), feedback volume, time since training and input drift (PSI of the production model\'s logged inputs against its training data, met at 0.25) — with its threshold, current value, whether it is met and why; the drift condition carries every column\'s PSI under drift. A condition that could not be measured says so in details.',
   inputSchema: {
     type: 'object',
     properties: {

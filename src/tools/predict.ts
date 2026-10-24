@@ -14,7 +14,7 @@ export const predictSchema = z.object({
   experimentId: z.string().optional()
     .describe('Predict with this experiment (e.g. a staging candidate) instead of production — production does not move'),
   output: z.string().optional().describe('Output file path'),
-  log: z.boolean().optional().describe('Enable prediction logging'),
+  log: z.boolean().optional().describe('Log the predictions; without an output file each returned row carries the predictionId that feedback takes'),
   unknownStrategy: z.enum(['auto', 'error', 'use-most-frequent', 'use-missing']).optional()
     .describe('Strategy for handling unknown categorical values in prediction data'),
 });
@@ -106,7 +106,7 @@ export const predictTool = {
       },
       log: {
         type: 'boolean',
-        description: 'Enable prediction logging to DataStore',
+        description: 'Log the predictions; without an output file each returned row carries the predictionId that feedback takes',
       },
       unknownStrategy: {
         type: 'string',
