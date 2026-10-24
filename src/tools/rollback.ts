@@ -40,14 +40,5 @@ export async function rollback(params: RollbackParams): Promise<{ content: Array
 export const rollbackTool = {
   name: 'mloop_rollback',
   description: 'Return production to the experiment it held before the current one (from the promotion history), backing up the current production first. With "to", return to a named experiment that has been production before; an experiment that never served is refused — use mloop_promote for that.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: { type: 'string', description: 'Path to MLoop project directory' },
-      modelName: { type: 'string', description: 'Model name for namespacing' },
-      to: { type: 'string', description: 'Experiment to return to (must have been production before)' },
-    },
-    required: ['projectPath'],
-  },
   handler: rollback,
 };

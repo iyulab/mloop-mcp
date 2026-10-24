@@ -53,23 +53,5 @@ export async function list(params: ListParams): Promise<{ content: Array<{ type:
 export const listTool = {
   name: 'mloop_list',
   description: 'List all experiments and their metrics for a model.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Filter experiments by model name',
-      },
-      showAll: {
-        type: 'boolean',
-        description: 'Show all experiments including failed ones',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: list,
 };

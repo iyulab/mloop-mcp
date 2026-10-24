@@ -45,20 +45,5 @@ export async function init(params: InitParams): Promise<{ content: Array<{ type:
 export const initTool = {
   name: 'mloop_init',
   description: 'Initialize a new MLoop project. Creates mloop.yaml, datasets/, models/ directories.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to create/initialize the MLoop project',
-      },
-      task: {
-        type: 'string',
-        enum: ['binary-classification', 'multiclass-classification', 'regression'],
-        description: 'ML task type for this project',
-      },
-    },
-    required: ['projectPath', 'task'],
-  },
   handler: init,
 };

@@ -66,23 +66,5 @@ export async function serve(params: ServeParams): Promise<{ content: Array<{ typ
 export const serveTool = {
   name: 'mloop_serve',
   description: 'Start the MLoop REST API server for serving predictions via HTTP.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      port: {
-        type: 'number',
-        description: 'Port number to listen on (default: 5000)',
-      },
-      host: {
-        type: 'string',
-        description: 'Host address to bind to',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: serve,
 };

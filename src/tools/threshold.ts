@@ -50,19 +50,5 @@ export async function threshold(params: ThresholdParams): Promise<{ content: Arr
 export const thresholdTool = {
   name: 'mloop_threshold',
   description: 'A binary classifier\'s decision threshold, as JSON. With precision and dataFile, chooses the probability threshold at which the precision of the positive class — or of precisionOf, the negative one included (mloop >= 0.40) — reaches the target on those labeled rows, keeping the most of that class\'s recall, and writes it beside the model — predict, serve, evaluate and the gate then answer at it, and promote carries it. Without precision, shows the current one; with clear, removes it. Refused for a model that is not binary or gives no probability, or when no threshold reaches the precision (mloop >= 0.39).',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: { type: 'string', description: 'Path to MLoop project directory' },
-      experimentId: { type: 'string', description: 'Experiment (default: production)' },
-      modelName: { type: 'string', description: 'Model name for namespacing' },
-      precision: { type: 'number', description: 'Target positive precision, above 0 and at most 1' },
-      precisionOf: { type: 'string', description: 'Class whose precision is targeted, by label value (default: positive class)' },
-      dataFile: { type: 'string', description: 'Labeled evaluation file (required with precision)' },
-      weight: { type: 'string', description: 'Column that weights the rows' },
-      clear: { type: 'boolean', description: 'Remove the threshold' },
-    },
-    required: ['projectPath'],
-  },
   handler: threshold,
 };

@@ -39,15 +39,5 @@ export async function validate(params: ValidateParams): Promise<{ content: Array
 export const validateTool = {
   name: 'mloop_validate',
   description: 'Validate the mloop.yaml configuration file. Checks for syntax errors, missing fields, and invalid values.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: validate,
 };

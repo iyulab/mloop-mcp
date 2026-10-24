@@ -50,25 +50,5 @@ export async function compare(params: CompareParams): Promise<{ content: Array<{
 export const compareTool = {
   name: 'mloop_compare',
   description: 'Compare metrics across multiple experiments to identify the best performing model.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      experiments: {
-        type: 'array',
-        items: { type: 'string' },
-        minItems: 2,
-        description: 'List of experiment IDs to compare (e.g., ["exp-001", "exp-002"])',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name for namespacing',
-      },
-    },
-    required: ['projectPath', 'experiments'],
-  },
   handler: compare,
 };

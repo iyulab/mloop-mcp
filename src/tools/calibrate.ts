@@ -48,18 +48,5 @@ export async function calibrate(params: CalibrateParams): Promise<{ content: Arr
 export const calibrateTool = {
   name: 'mloop_calibrate',
   description: 'A classifier\'s probability calibration, as JSON. With dataFile, fits a map from the model\'s own probability to how often it is right on those labeled rows (binary: platt or isotonic; multiclass: temperature, answers unchanged; weighted rows allowed) and writes it beside the model without retraining — predict, serve, evaluate (its ECE) and a threshold chosen afterwards then read calibrated probabilities, and promote carries it. Reports ECE before and after on the fit rows (in-sample). Refused while the model has a decision threshold (clear it, calibrate, choose it again). Without dataFile, shows the current one; with clear, removes it (mloop >= 0.40).',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: { type: 'string', description: 'Path to MLoop project directory' },
-      experimentId: { type: 'string', description: 'Experiment (default: production)' },
-      modelName: { type: 'string', description: 'Model name for namespacing' },
-      dataFile: { type: 'string', description: 'Labeled rows to fit on' },
-      method: { type: 'string', enum: ['platt', 'isotonic', 'temperature'], description: 'Calibration method (default: platt for binary, temperature for multiclass)' },
-      weight: { type: 'string', description: 'Column that weights the rows' },
-      clear: { type: 'boolean', description: 'Remove the calibration' },
-    },
-    required: ['projectPath'],
-  },
   handler: calibrate,
 };

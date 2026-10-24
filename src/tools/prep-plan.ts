@@ -66,31 +66,5 @@ export const prepPlanTool = {
     'or omit both to list the current plan. Returns a JSON envelope where each step reports its ' +
     'leakage category (preFeaturizer/csvStage/unsupportedLeakageWarn) and fold-safety. ' +
     'Statistical fit happens fold-internally at train time.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to the MLoop project directory',
-      },
-      set: {
-        type: 'string',
-        description: 'Add/replace a prep step: "type[:method]" (e.g. "normalize:z-score", "drop-duplicates")',
-      },
-      columns: {
-        type: 'string',
-        description: 'Comma-separated target columns for the set/remove step (e.g. "a,b")',
-      },
-      remove: {
-        type: 'string',
-        description: 'Remove prep step(s) of this type',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name in mloop.yaml (default: "default")',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: prepPlan,
 };

@@ -79,32 +79,5 @@ export async function quickStart(params: QuickStartParams): Promise<{ content: A
 export const quickStartTool = {
   name: 'mloop_quick_start',
   description: 'One-step project setup: initialize -> train -> auto-promote. Provide data file, label, and task type to go from zero to production model.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Project directory path',
-      },
-      dataFile: {
-        type: 'string',
-        description: 'Training data CSV file path',
-      },
-      label: {
-        type: 'string',
-        description: 'Label column name',
-      },
-      task: {
-        type: 'string',
-        enum: ['binary-classification', 'multiclass-classification', 'regression'],
-        description: 'ML task type',
-      },
-      time: {
-        type: 'number',
-        description: 'Training time in seconds (omit for auto-time)',
-      },
-    },
-    required: ['projectPath', 'dataFile', 'label', 'task'],
-  },
   handler: quickStart,
 };

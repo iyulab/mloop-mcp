@@ -51,31 +51,5 @@ export async function prep(params: PrepParams): Promise<{ content: Array<{ type:
 export const prepTool = {
   name: 'mloop_prep',
   description: "Run a model's preprocessing pipeline — the prep steps declared under the model in mloop.yaml (see mloop_prep_plan) — over a CSV file, writing the prepared file.",
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      modelName: {
-        type: 'string',
-        description: "Model whose prep steps (mloop.yaml) to run (default: 'default')",
-      },
-      input: {
-        type: 'string',
-        description: 'Input CSV file (default: datasets/train.csv)',
-      },
-      output: {
-        type: 'string',
-        description: 'Output CSV file (default: <input>_prep.csv)',
-      },
-      dryRun: {
-        type: 'boolean',
-        description: 'Show the pipeline steps without executing them',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: prep,
 };

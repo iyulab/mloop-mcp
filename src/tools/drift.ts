@@ -45,15 +45,5 @@ export async function drift(params: DriftParams): Promise<{ content: Array<{ typ
 export const driftTool = {
   name: 'mloop_drift',
   description: 'How far the production model\'s recent inputs (its own logged predictions) have moved from the data it was trained on, as JSON: status (Measured, NoProduction, NoProfile, TooFewRows), and per column the population stability index (PSI — under 0.1 stable, 0.1–0.25 moderate, 0.25+ significant), its level and the bin that moved most with its training and current share; plus, under drift.prediction, the same measure for the model\'s own answers against its answers at training (predicted class, or predicted value by decile; null when the model has no answer profile — mloop >= 0.39). A free-text column appears as two columns, "<column> (length)" and "<column> (unseen words)" — the share of words training never saw, the one that moves when the text changes subject (mloop >= 0.40). With sliceBy, the same per value of an input column. Answers that move while inputs hold mean the mix of requests shifted inside known ranges. Use it to decide where to look harder or whether to retrain (mloop >= 0.38).',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: { type: 'string', description: 'Path to MLoop project directory' },
-      modelName: { type: 'string', description: 'Model name (default: "default")' },
-      rows: { type: 'number', description: 'How many of the most recent logged predictions to compare (default 5000, at least 100)' },
-      sliceBy: { type: 'string', description: 'Also report drift per value of this input column' },
-    },
-    required: ['projectPath'],
-  },
   handler: drift,
 };

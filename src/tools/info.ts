@@ -63,35 +63,5 @@ export async function info(params: InfoParams): Promise<{ content: Array<{ type:
 export const infoTool = {
   name: 'mloop_info',
   description: 'Analyze and profile a dataset. Shows column types, statistics, missing values, and more. Can read label column from mloop.yaml configuration.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      dataFile: {
-        type: 'string',
-        description: 'Path to the data file to analyze (CSV)',
-      },
-      projectPath: {
-        type: 'string',
-        description: 'MLoop project path for resolving relative paths',
-      },
-      label: {
-        type: 'string',
-        description: 'Label column name (overrides mloop.yaml setting)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name to read label configuration from mloop.yaml (default: "default")',
-      },
-      analyze: {
-        type: 'boolean',
-        description: 'Enable deep analysis including correlation, feature importance, distribution, and anomaly detection',
-      },
-      sampleSize: {
-        type: 'number',
-        description: 'Maximum number of rows to sample for deep analysis (default: 50000)',
-      },
-    },
-    required: ['dataFile'],
-  },
   handler: info,
 };

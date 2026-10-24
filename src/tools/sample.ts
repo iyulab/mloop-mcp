@@ -64,44 +64,5 @@ export async function sample(params: SampleParams): Promise<{ content: Array<{ t
 export const sampleTool = {
   name: 'mloop_sample',
   description: 'Create a sampled dataset — from a model\'s logged predictions and feedback (a retraining dataset: feedback under the model\'s label, with a weight column when feedback carries weights) or from a CSV file — or view sampling statistics.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      action: {
-        type: 'string',
-        enum: ['create', 'stats'],
-        description: 'Sample action: "create" to generate a sample, "stats" to view statistics',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model whose logged predictions and feedback to sample (default: "default")',
-      },
-      dataFile: {
-        type: 'string',
-        description: 'CSV file to sample from instead of prediction logs ("create" only)',
-      },
-      size: {
-        type: 'number',
-        description: 'Number of rows to sample (default 1000)',
-      },
-      strategy: {
-        type: 'string',
-        description: 'Sampling strategy — logs: random, recent, feedback-priority, stratified, low-confidence; CSV: random, head, stratified',
-      },
-      label: {
-        type: 'string',
-        description: 'Label column for stratified CSV sampling',
-      },
-      output: {
-        type: 'string',
-        description: 'Output CSV path',
-      },
-    },
-    required: ['projectPath', 'action'],
-  },
   handler: sample,
 };

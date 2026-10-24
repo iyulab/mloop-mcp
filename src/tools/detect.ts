@@ -58,31 +58,5 @@ export async function detect(params: DetectParams): Promise<{ content: Array<{ t
 export const detectTool = {
   name: 'mloop_detect',
   description: 'One-shot time-series anomaly detection over an entire CSV series (spectral residual, no training, no MLoop project required). Every point returns an anomaly verdict (isAnomaly), its score, an expectedValue and control limits (controlLower/controlUpper — the chartable band normal points lie inside); nearEdge marks points too close to the end of the series to judge as surely. Use this instead of train+predict when analyzing a whole series once.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      dataPath: {
-        type: 'string',
-        description: 'Path to the CSV file containing the time series',
-      },
-      column: {
-        type: 'string',
-        description: 'Value column to monitor (auto-selected when the CSV has a single column)',
-      },
-      threshold: {
-        type: 'number',
-        description: "Score above which a point is an anomaly (> 0; the score is a point's saliency relative to the points before it; default 3)",
-      },
-      sensitivity: {
-        type: 'number',
-        description: 'Coverage of the control limits in percent (0-100, exclusive; 99.73 = 3 sigma; default 99.73)',
-      },
-      output: {
-        type: 'string',
-        description: 'Also write the full per-point result to this CSV file',
-      },
-    },
-    required: ['dataPath'],
-  },
   handler: detect,
 };

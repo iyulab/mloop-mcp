@@ -81,40 +81,5 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
 export const predictTool = {
   name: 'mloop_predict',
   description: 'Run predictions using a trained model. Uses production model by default; `experimentId` predicts with that experiment instead (a shadow prediction — production does not move). The JSON names the model that answered in `experimentId`.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      dataFile: {
-        type: 'string',
-        description: 'Input data file for predictions (default: datasets/predict.csv)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name to use for prediction',
-      },
-      experimentId: {
-        type: 'string',
-        description: 'Experiment to predict with instead of production (e.g. a staging candidate, "exp-003"). Production does not move; logged rows carry this id.',
-      },
-      output: {
-        type: 'string',
-        description: 'Output file path for predictions',
-      },
-      log: {
-        type: 'boolean',
-        description: 'Log the predictions; without an output file each returned row carries the predictionId that feedback takes',
-      },
-      unknownStrategy: {
-        type: 'string',
-        enum: ['auto', 'error', 'use-most-frequent', 'use-missing'],
-        description: 'Strategy for handling unknown categorical values: "auto" (auto-select based on ratio, default), "error" (fail on unknowns), "use-most-frequent" (replace with most common value), "use-missing" (replace with empty)',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: predict,
 };

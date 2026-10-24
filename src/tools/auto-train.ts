@@ -82,31 +82,5 @@ export async function autoTrain(params: AutoTrainParams): Promise<{ content: Arr
 export const autoTrainTool = {
   name: 'mloop_auto_train',
   description: 'Automated training pipeline: profile data -> train (with auto-time) -> list experiments. Handles the full training workflow in a single call.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Project directory path',
-      },
-      dataFile: {
-        type: 'string',
-        description: 'Training data file path (default: datasets/train.csv)',
-      },
-      label: {
-        type: 'string',
-        description: 'Label column name (uses mloop.yaml default if omitted)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name (default: "default")',
-      },
-      time: {
-        type: 'number',
-        description: 'Training time in seconds (omit for auto-time)',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: autoTrain,
 };

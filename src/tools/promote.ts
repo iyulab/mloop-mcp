@@ -86,39 +86,5 @@ export async function promote(params: PromoteParams): Promise<{ content: Array<{
 export const promoteTool = {
   name: 'mloop_promote',
   description: 'Promote an experiment to production. Select by explicit ID, or auto-select with latest (newest completed) / best (best metric, direction-aware). The promoted model will be used for predictions. With history, lists every change of production instead — experiment, what it replaced, action (promote / auto-promote / rollback), the quality gate outcome (passed / forced / not-applied) and the metric value (mloop >= 0.39).',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      experimentId: {
-        type: 'string',
-        description: 'Experiment ID to promote (e.g., exp-003); omit when using latest/best',
-      },
-      latest: {
-        type: 'boolean',
-        description: 'Promote the most recent completed experiment',
-      },
-      best: {
-        type: 'boolean',
-        description: 'Promote the completed experiment with the best metric (direction-aware: error metrics pick the minimum)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name for namespacing',
-      },
-      force: {
-        type: 'boolean',
-        description: 'Skip the confirmation prompt, and promote a model the quality gate refuses (without it, such a model is refused with the reason)',
-      },
-      history: {
-        type: 'boolean',
-        description: 'List every change of production instead of promoting (mloop >= 0.39)',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: promote,
 };

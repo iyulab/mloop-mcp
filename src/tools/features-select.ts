@@ -61,31 +61,5 @@ export const featuresSelectTool = {
     "Exclude columns with drop='a,b', keep only certain columns with keep='a,b' (all others " +
     'excluded, label always kept), or clear all exclusions with reset=true. Returns a JSON ' +
     'envelope listing the excluded (ignored) columns.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to the MLoop project directory',
-      },
-      drop: {
-        type: 'string',
-        description: 'Comma-separated columns to exclude from features (e.g. "id,ts")',
-      },
-      keep: {
-        type: 'string',
-        description: 'Comma-separated columns to keep; all others excluded (label always kept)',
-      },
-      reset: {
-        type: 'boolean',
-        description: 'Remove all "ignore" overrides (clears feature exclusions)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name in mloop.yaml (default: "default")',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: featuresSelect,
 };

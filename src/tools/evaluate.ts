@@ -82,39 +82,5 @@ export async function evaluate(params: EvaluateParams): Promise<{ content: Array
 export const evaluateTool = {
   name: 'mloop_evaluate',
   description: 'Evaluate a model\'s performance on test data, as JSON: test metrics beside the training metrics, per slice with sliceBy, weighted with weight. For a classifier, confusion: classes and counts[actual][predicted] (weighted sums under weight; per slice too) — read any class-set rate from it, e.g. the share of a must-catch class answered as a harmless one (mloop >= 0.39). With against (an experiment id or "production"), the other model is scored on the same rows and weights and the two are compared row by row: comparison.metrics, and comparison.paired — the per-row loss (error_rate for a classifier, squared_error for a regressor) of each, their difference (candidate − baseline), a 95% paired bootstrap interval, and verdict CandidateBetter / BaselineBetter / Indistinguishable. Use it to decide whether a staging candidate should replace production.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      dataFile: {
-        type: 'string',
-        description: 'Test data file for evaluation',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name to evaluate',
-      },
-      experimentId: {
-        type: 'string',
-        description: 'Specific experiment ID to evaluate (otherwise uses production)',
-      },
-      sliceBy: {
-        type: 'string',
-        description: 'Also report the metrics for each value of this column (any column of the test file); slices under 30 rows are marked, more than 50 values is refused',
-      },
-      weight: {
-        type: 'string',
-        description: 'Column of the test file that weights its rows (e.g. 1/π of a recheck sample). A weighted experiment uses its training weight by default when the file has that column',
-      },
-      against: {
-        type: 'string',
-        description: 'Experiment id, or "production", to compare with on the same rows and weights (mloop >= 0.39)',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: evaluate,
 };

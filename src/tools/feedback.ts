@@ -67,41 +67,5 @@ export async function feedback(params: FeedbackParams): Promise<{ content: Array
 export const feedbackTool = {
   name: 'mloop_feedback',
   description: 'Manage feedback for model predictions. Add the actual value for a logged prediction (with its source and an optional weight), list existing feedback, or view feedback metrics (accuracy is weighted when feedback carries weights).',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      action: {
-        type: 'string',
-        enum: ['add', 'list', 'metrics'],
-        description: 'Feedback action: "add" to submit feedback, "list" to view, "metrics" to see statistics',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name for "list" and "metrics" (default: "default")',
-      },
-      predictionId: {
-        type: 'string',
-        description: 'Prediction ID to add feedback for (required for "add")',
-      },
-      value: {
-        type: 'string',
-        description: 'The actual (ground-truth) value (required for "add")',
-      },
-      source: {
-        type: 'string',
-        description: 'Where the value came from, e.g. "human", "reviewer-llm" (for "add")',
-      },
-      weight: {
-        type: 'number',
-        minimum: 0,
-        description: 'How much this row counts in training and evaluation built from feedback — for a row reviewed with probability p, 1/p (for "add"; default 1)',
-      },
-    },
-    required: ['projectPath', 'action'],
-  },
   handler: feedback,
 };

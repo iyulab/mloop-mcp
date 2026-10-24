@@ -45,23 +45,5 @@ export async function logs(params: LogsParams): Promise<{ content: Array<{ type:
 export const logsTool = {
   name: 'mloop_logs',
   description: 'View prediction logs for a model. Shows recent predictions with timestamps and results.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name (default: "default")',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum number of log entries to show',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: logs,
 };

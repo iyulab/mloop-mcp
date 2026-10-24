@@ -52,19 +52,5 @@ export async function projectOverview(params: ProjectOverviewParams): Promise<{ 
 export const projectOverviewTool = {
   name: 'mloop_project_overview',
   description: 'Get a comprehensive overview of the MLoop project: status, all experiments, and production model metrics in a single call.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Project directory path',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name (default: "default")',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: projectOverview,
 };

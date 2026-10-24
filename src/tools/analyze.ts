@@ -93,34 +93,5 @@ export const analyzeTool = {
     'Run a single, read-only exploratory-data-analysis (EDA) aspect on a dataset and return a ' +
     'structured JSON envelope for feature-engineering decisions. Aspects: profile, correlation, ' +
     'importance (needs a label), outliers, distribution. Never mutates the data file or mloop.yaml.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      aspect: {
-        type: 'string',
-        enum: ['profile', 'correlation', 'importance', 'outliers', 'distribution'],
-        description:
-          'EDA aspect: "profile" (types/null%/cardinality/constant), "correlation" (high-correlation pairs + multicollinearity), "importance" (feature ranking, requires a label), "outliers" (count/rate/isolation-forest threshold), "distribution" (skewness/kurtosis/normality).',
-      },
-      dataFile: {
-        type: 'string',
-        description:
-          "Path to the CSV dataset to analyze. Optional: when omitted, defaults to the project's configured train data (data.train in mloop.yaml, else datasets/train.csv). Pass projectPath so the default can be resolved.",
-      },
-      projectPath: {
-        type: 'string',
-        description: 'MLoop project path for resolving relative paths and the default data file',
-      },
-      label: {
-        type: 'string',
-        description: 'Label/target column name (overrides mloop.yaml; required for the "importance" aspect)',
-      },
-      modelName: {
-        type: 'string',
-        description: 'Model name to read label configuration from mloop.yaml (default: "default")',
-      },
-    },
-    required: ['aspect'],
-  },
   handler: analyze,
 };

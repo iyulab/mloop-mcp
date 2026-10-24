@@ -45,15 +45,5 @@ export async function status(params: StatusParams): Promise<{ content: Array<{ t
 export const statusTool = {
   name: 'mloop_status',
   description: 'Show MLoop project status including models, experiments, and production deployments.',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      projectPath: {
-        type: 'string',
-        description: 'Path to MLoop project directory',
-      },
-    },
-    required: ['projectPath'],
-  },
   handler: status,
 };
