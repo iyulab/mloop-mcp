@@ -31,7 +31,9 @@ jobs:
           echo "package=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
           echo "local=$LOCAL_VERSION" >> "$GITHUB_OUTPUT"
           echo "published=$PUBLISHED_VERSION" >> "$GITHUB_OUTPUT"
-          if [ "$LOCAL_VERSION" = "$PUBLISHED_VERSION" ]; then
+          # Skip when this exact version is on the registry, not only when it is the latest: a patch published
+          # from a release branch makes main's version older than the latest without main having anything new.
+          if npm view "$PACKAGE_NAME@$LOCAL_VERSION" version 2>/dev/null | grep -q .; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "Version $LOCAL_VERSION is already published. Skipping."
           else
