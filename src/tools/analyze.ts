@@ -61,7 +61,6 @@ export async function analyze(
 
     const result = await executeMloop(args, {
       cwd: projectPath,
-      timeout: 600_000, // 10 minutes: importance/distribution can run statistical analysis
     });
 
     const output = parseCliOutput(result.stdout);

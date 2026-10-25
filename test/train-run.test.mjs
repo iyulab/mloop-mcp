@@ -38,6 +38,7 @@ if (mode === 'slow') {
       clearInterval(t);
       out({ event: 'phase', phase: 'complete', trials: 6 });
       out({ event: 'result', model: 'default', experimentId: 'exp-001', metrics: { r_squared: 0.56 }, args: process.argv.slice(2) });
+      out({ event: 'promotion', experimentId: 'exp-001', promoted: false, keptInStagingReason: 'it does not beat production' });
     }
   }, 300);
 }
@@ -65,6 +66,8 @@ test('reports progress per trial and answers the result with its warnings', asyn
     const outcome = JSON.parse(answer.content[0].text);
     assert.equal(outcome.result.experimentId, 'exp-001');
     assert.deepEqual(outcome.warnings, ['few rows']);
+    assert.equal(outcome.promotion.promoted, false);
+    assert.equal(outcome.promotion.keptInStagingReason, 'it does not beat production');
     assert.ok(outcome.result.args.includes('--json'), 'the run was asked for its events');
     assert.ok(seen.length >= 2, `progress was reported (${seen.length})`);
     assert.ok(seen.some(p => /^trial \d+: FastForest r_squared 0\.5\d+ · \d+\.\d s of a 2 s budget$/.test(p.message)),

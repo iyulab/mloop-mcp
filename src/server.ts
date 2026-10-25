@@ -35,6 +35,7 @@ import {
   projectOverviewTool, projectOverviewSchema,
 } from './tools/index.js';
 import { packageVersion } from './package-info.js';
+import { withRequestSignal } from './executor.js';
 
 type ToolResult = { content: Array<{ type: 'text'; text: string }>; isError?: boolean };
 
@@ -92,7 +93,7 @@ export function createServer(): McpServer {
     server.registerTool(
       tool.name,
       { description: tool.description, inputSchema: schema },
-      async (params, ctx) => tool.handler(params, ctx)
+      async (params, ctx) => withRequestSignal(ctx.mcpReq.signal, () => tool.handler(params, ctx))
     );
   }
 

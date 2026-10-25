@@ -4,8 +4,9 @@
 
 import { z } from 'zod';
 import { mkdirSync } from 'fs';
+import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
-import { parseCliOutput } from '../utils/parser.js';
+import { runTraining } from '../training-run.js';
 import { formatError } from '../utils/errors.js';
 
 export const quickStartSchema = z.object({
@@ -20,7 +21,7 @@ export const quickStartSchema = z.object({
 
 export type QuickStartParams = z.infer<typeof quickStartSchema>;
 
-export async function quickStart(params: QuickStartParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
+export async function quickStart(params: QuickStartParams, ctx?: ServerContext): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   const steps: string[] = [];
   try {
     // Step 1: Init (ensure directory exists)
@@ -33,19 +34,11 @@ export async function quickStart(params: QuickStartParams): Promise<{ content: A
     const trainParams: Record<string, unknown> = { label: params.label };
     if (params.time) trainParams['time'] = params.time;
     const trainArgs = buildArgsWithPositional('train', [params.dataFile], trainParams);
-    const trainResult = await executeMloop(trainArgs, {
-      cwd: params.projectPath,
-      timeout: 1_200_000, // 20 min for auto-time
-    });
-    const trainOutput = parseCliOutput(trainResult.stdout);
+    const training = await runTraining(trainArgs, params.projectPath, params.time, ctx);
     steps.push('Model trained');
 
-    // Extract experiment ID from output
-    const expMatch = trainOutput.match(/Experiment ID:\s*(exp-\d+)/);
-    const expId = expMatch?.[1] ?? 'exp-001';
-
-    // Check if auto-promoted
-    if (trainOutput.includes('promoted to production')) {
+    const expId = String(training.result?.['experimentId'] ?? 'unknown');
+    if (training.promotion?.['promoted'] === true) {
       steps.push(`${expId} auto-promoted to production`);
     }
 
@@ -56,7 +49,7 @@ export async function quickStart(params: QuickStartParams): Promise<{ content: A
           success: true,
           summary: `Project initialized and model trained (${expId})`,
           steps,
-          training_output: trainOutput,
+          training: training,
         }, null, 2),
       }],
     };

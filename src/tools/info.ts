@@ -38,7 +38,6 @@ export async function info(params: InfoParams): Promise<{ content: Array<{ type:
 
     const result = await executeMloop(args, {
       cwd: projectPath,
-      timeout: analyze ? 600_000 : undefined, // 10 minutes for deep analysis
     });
 
     const output = parseCliOutput(result.stdout);

@@ -2,20 +2,25 @@
  * CLI subprocess executor for mloop commands
  */
 
-import { spawn } from 'child_process';
+import { spawn, type ChildProcess } from 'child_process';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { openSync, closeSync } from 'node:fs';
 import { CancelledError, CliExecutionError, TimeoutError } from './utils/errors.js';
 
 export interface ExecuteOptions {
   /** Working directory for command execution */
   cwd?: string;
-  /** Timeout in milliseconds (default: 300000 = 5 minutes); `null` for none — a run bounded by its own budget. */
+  /**
+   * Wall-clock bound in milliseconds; none by default — how long a command takes follows its data, and the caller
+   * can cancel (see `signal`).
+   */
   timeout?: number | null;
   /**
-   * Stops the command when it has written nothing for this long, in milliseconds — what tells a stalled run from a
-   * long one that is still reporting.
+   * Stops the command when it has written nothing for this long, in milliseconds (default 20 minutes) — what tells a
+   * stalled command from a long one.
    */
   idleTimeout?: number;
-  /** Stops the command when aborted — the caller cancelled the request it runs for. */
+  /** Stops the command when aborted; defaults to the signal of the tool call being answered ({@link withRequestSignal}). */
   signal?: AbortSignal;
   /** Called with each complete line the command writes to stdout, as it arrives. */
   onStdoutLine?: (line: string) => void;
@@ -29,7 +34,17 @@ export interface ExecuteResult {
   exitCode: number;
 }
 
-const DEFAULT_TIMEOUT = 300_000; // 5 minutes
+const DEFAULT_IDLE_TIMEOUT = 20 * 60_000;
+
+const requestSignal = new AsyncLocalStorage<AbortSignal>();
+
+/**
+ * Runs `work` with `signal` as the cancellation of every command it executes — the server wraps each tool call in the
+ * call's own signal, so cancelling a call stops the command it is waiting on, whichever tool runs it.
+ */
+export function withRequestSignal<T>(signal: AbortSignal, work: () => Promise<T>): Promise<T> {
+  return requestSignal.run(signal, work);
+}
 
 /**
  * Get the mloop executable path.
@@ -52,27 +67,13 @@ export async function executeMloop(
   args: string[],
   options: ExecuteOptions = {}
 ): Promise<ExecuteResult> {
-  const { cwd, timeout = DEFAULT_TIMEOUT, idleTimeout, signal, onStdoutLine, env } = options;
-  const mloopPath = getMloopPath();
+  const { cwd, timeout = null, idleTimeout = DEFAULT_IDLE_TIMEOUT, onStdoutLine, env } = options;
+  const signal = options.signal ?? requestSignal.getStore();
 
   if (signal?.aborted) throw new CancelledError();
 
   return new Promise((resolve, reject) => {
-    // Build single command string for shell execution
-    // This avoids DEP0190 (passing args array with shell: true)
-    const quotedArgs = args.map(arg =>
-      arg.includes(' ') ? `"${arg}"` : arg
-    );
-    const command = `${mloopPath} ${quotedArgs.join(' ')}`;
-
-    const proc = spawn(command, [], {
-      cwd,
-      env: { ...process.env, ...env },
-      shell: true, // Required for Windows PATH resolution
-      windowsHide: true,
-      // Its own process group, so stopping it stops mloop and not only the shell that started it.
-      detached: process.platform !== 'win32',
-    });
+    const proc = spawnMloop(args, cwd, env, ['pipe', 'pipe', 'pipe']);
 
     let stdout = '';
     let stderr = '';
@@ -152,6 +153,50 @@ export async function executeMloop(
         resolve(result);
       }
     });
+  });
+}
+
+/**
+ * Starts mloop and leaves it running after this server returns — `mloop serve`. Its output goes to `logFile`; the
+ * caller watches the returned process only for an early exit.
+ */
+export function startMloopDetached(args: string[], cwd: string | undefined, logFile: string): ChildProcess {
+  const log = openSync(logFile, 'a');
+  try {
+    const proc = spawnMloop(args, cwd, undefined, ['ignore', log, log]);
+    proc.unref();
+    return proc;
+  } finally {
+    closeSync(log);
+  }
+}
+
+/** Stops a process started by {@link startMloopDetached} — and what it started. */
+export function stopMloop(proc: ChildProcess): void {
+  killTree(proc.pid);
+}
+
+function spawnMloop(
+  args: string[],
+  cwd: string | undefined,
+  env: Record<string, string> | undefined,
+  stdio: Array<'pipe' | 'ignore' | number>,
+): ChildProcess {
+  // Build single command string for shell execution
+  // This avoids DEP0190 (passing args array with shell: true)
+  const quotedArgs = args.map(arg =>
+    arg.includes(' ') ? `"${arg}"` : arg
+  );
+  const command = `${getMloopPath()} ${quotedArgs.join(' ')}`;
+
+  return spawn(command, [], {
+    cwd,
+    env: { ...process.env, ...env },
+    shell: true, // Required for Windows PATH resolution
+    windowsHide: true,
+    stdio,
+    // Its own process group, so stopping it stops mloop and not only the shell that started it.
+    detached: process.platform !== 'win32',
   });
 }
 

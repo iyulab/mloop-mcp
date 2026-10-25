@@ -13,17 +13,15 @@ interface TrainEvent {
   [key: string]: unknown;
 }
 
-/** What a finished run answers: the `result` event and the warnings it raised on the way. */
+/**
+ * What a finished run answers: the `result` event, the `promotion` event (whether it went to production, and why not),
+ * and the warnings it raised on the way. `promotion` is null from a CLI older than the event.
+ */
 export interface TrainingOutcome {
   result: TrainEvent | null;
+  promotion: TrainEvent | null;
   warnings: string[];
 }
-
-/**
- * How long a run may write nothing before it is taken as stalled: a deep-learning epoch over a few large images can
- * take minutes between lines on a CPU, a trainer search writes a line per trial.
- */
-const IDLE_TIMEOUT_MS = 20 * 60_000;
 
 /** How often trial progress is sent at most — a search can finish dozens of trials a second. */
 const PROGRESS_INTERVAL_MS = 1_000;
@@ -55,6 +53,7 @@ export async function runTraining(
   let trials = 0;
   const warnings: string[] = [];
   let result: TrainEvent | null = null;
+  let promotion: TrainEvent | null = null;
 
   const progress = (message: string, force: boolean) => {
     if (token === undefined || ctx === undefined) return;
@@ -91,6 +90,9 @@ export async function runTraining(
       case 'result':
         result = event;
         break;
+      case 'promotion':
+        promotion = event;
+        break;
     }
   };
 
@@ -98,8 +100,6 @@ export async function runTraining(
     await executeMloop([...args, '--json'], {
       cwd,
       timeout: trainingTimeout(timeSeconds),
-      idleTimeout: IDLE_TIMEOUT_MS,
-      signal: ctx?.mcpReq.signal,
       onStdoutLine: onLine,
     });
   } catch (error) {
@@ -112,7 +112,7 @@ export async function runTraining(
     }
     throw new Error(formatError(error));
   }
-  return { result, warnings };
+  return { result, promotion, warnings };
 }
 
 function parse(line: string): TrainEvent | null {

@@ -114,7 +114,13 @@ report are) and the `warnings` the run raised. A call that carries a progress to
 each phase and, at most once a second, for the trial just finished (`trial 12: FastForest r_squared 0.8828 · 4.1 s of a
 60 s budget`). Cancelling the call stops the training process. A run with `time` is stopped well past its budget
 (the budget plus 10 minutes, or half again for budgets over 20 minutes); one without `time` sizes its own budget, so
-it is stopped only when it writes nothing for 20 minutes. `mloop_auto_train` trains the same way.
+it is stopped only when it writes nothing for 20 minutes. `mloop_auto_train` and `mloop_quick_start` train the same
+way, and the answer carries `promotion` — whether the experiment went to production, and why not (`mloop` 0.46.0
+and later).
+
+Every other tool runs its command with no wall-clock limit (how long it takes follows the data) and stops it when
+the call is cancelled or the command writes nothing for 20 minutes. `mloop_serve` returns once the server answers
+`/health` and leaves it running, naming its URL, process id, log file and the command that stops it.
 
 ### Run predictions
 

@@ -25,7 +25,7 @@ export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): P
     // Step 1: Info (optional, for reporting)
     if (params.dataFile) {
       const infoArgs = buildArgsWithPositional('info', [params.dataFile], {});
-      await executeMloop(infoArgs, { cwd: params.projectPath, signal: ctx?.mcpReq.signal });
+      await executeMloop(infoArgs, { cwd: params.projectPath });
       steps.push('Data profiled');
     }
 
@@ -46,7 +46,7 @@ export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): P
     const listOpts: Record<string, unknown> = {};
     if (params.modelName) listOpts['name'] = params.modelName;
     const listArgs = buildArgs('list', listOpts);
-    const listResult = await executeMloop(listArgs, { cwd: params.projectPath, signal: ctx?.mcpReq.signal });
+    const listResult = await executeMloop(listArgs, { cwd: params.projectPath });
     steps.push('Experiments listed');
 
     return {
