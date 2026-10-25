@@ -32,6 +32,9 @@
 | `mloop_trigger` | Check retrain triggers | `projectPath` |
 | `mloop_drift` | Input drift per column (PSI), answer drift, and per slice | `projectPath` |
 | `mloop_serve` | Start API server; returns once `/health` answers, with its URL, pid, log file and stop command — it keeps running after the call | `projectPath` |
+| `mloop_token` | Bearer token for the server (every endpoint but `/health`); `role: admin` for the write endpoints | `projectPath` |
+| `mloop_embed` | Images or texts → vectors + encoder identity | `projectPath, images? \| texts?` |
+| `mloop_encoder` | List · install · remove pretrained encoders | `projectPath, action` |
 
 ## Recommended Workflows
 

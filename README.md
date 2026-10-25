@@ -91,7 +91,10 @@ plugins:
 | `mloop_status` | Show project status |
 | `mloop_compare` | Compare multiple experiments |
 | `mloop_evaluate` | Evaluate model performance as JSON; with `against`, compare two models row by row on the same rows (mloop >= 0.39) |
-| `mloop_serve` | Start REST API server |
+| `mloop_serve` | Start the REST API server; returns once it answers `/health`, and leaves it running |
+| `mloop_token` | Issue the bearer token the server requires on every endpoint but `/health` (`role: admin` for writes) |
+| `mloop_embed` | Images or texts to vectors with a pretrained encoder, with the encoder's identity (texts: mloop >= 0.46) |
+| `mloop_encoder` | List, install (catalog: `dinov2-small`, `multilingual-minilm`) or remove pretrained encoders |
 
 ## Tool Examples
 

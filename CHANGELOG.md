@@ -9,8 +9,18 @@ Releases before 0.12.0 are described by their commits.
 Every tool works with `mloop` 0.40 or later; `mloop_train`, `mloop_auto_train` and `mloop_quick_start` report
 whether the experiment was promoted with `mloop` 0.46.0 or later.
 
+### Security
+
+- Tool arguments reached the CLI through a shell, with only values containing a space quoted: a quote, `$(…)`, a
+  backtick or a semicolon in any value a caller passed — a file name, a label, a text — ran as a shell command with
+  the server's privileges. The CLI is now started without a shell, with its arguments passed as given. Every release
+  before this one is affected.
+
 ### Added
 
+- `mloop_token` issues the bearer token a server started with `mloop_serve` requires on every endpoint but
+  `/health`; `mloop_embed` turns images or texts into vectors with the encoder's identity; `mloop_encoder` lists,
+  installs and removes the pretrained encoders.
 - The server speaks both MCP protocol eras over stdio: a client opening with `initialize` (2025-11-25 and earlier)
   and a 2026-07-28 client opening with `server/discover` (MCP TypeScript SDK v2).
 - `mloop_train`, `mloop_auto_train` and `mloop_quick_start` report progress: a call that carries a progress token
