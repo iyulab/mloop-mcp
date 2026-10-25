@@ -2,19 +2,12 @@
 
 All notable changes to `@iyulab/mloop-mcp` are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
-Releases before 0.12.0 are described by their commits.
+Releases before 0.11.3 are described by their commits. Unreleased work on main includes the 0.11.3 fix.
 
 ## [Unreleased]
 
 Every tool works with `mloop` 0.40 or later; `mloop_train`, `mloop_auto_train` and `mloop_quick_start` report
 whether the experiment was promoted with `mloop` 0.46.0 or later.
-
-### Security
-
-- Tool arguments reached the CLI through a shell, with only values containing a space quoted: a quote, `$(…)`, a
-  backtick or a semicolon in any value a caller passed — a file name, a label, a text — ran as a shell command with
-  the server's privileges. The CLI is now started without a shell, with its arguments passed as given. Every release
-  before this one is affected.
 
 ### Added
 
@@ -60,3 +53,12 @@ whether the experiment was promoted with `mloop` 0.46.0 or later.
 
 - The hand-written JSON Schema copies (`*InputSchema`) and the `allTools` list exported from `./tools`: the server
   registers the zod schemas, and `tools/list` is unchanged. Import the `*Schema` zod objects instead.
+
+## [0.11.3] - 2026-10-25
+
+### Security
+
+- Tool arguments reached the CLI through a shell, with only values containing a space quoted: a quote, `$(…)`, a
+  backtick or a semicolon in any value a caller passed — a file name, a label, a text — ran as a shell command with
+  the server's privileges. The CLI is now started without a shell, with its arguments passed as given. Every release
+  before 0.11.3 is affected; 0.11.3 is 0.11.2 with this fix (and the lockfile's patched body-parser).
