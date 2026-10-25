@@ -9,6 +9,9 @@
  * is the authority — not this repository's idea of it.
  *
  * Usage: npm run build && node scripts/check-cli-options.mjs [path-to-mloop]   (default: mloop on PATH)
+ * A command that has --json is also reported when a tool calls it without: its JSON is the machine answer, and the
+ * console text a tool would pass on instead is a table an agent has to scrape.
+ *
  * Exit 0 when every call fits; 1 with one line per mismatch otherwise.
  */
 
@@ -90,6 +93,14 @@ function help(path) {
   return helpCache.get(key);
 }
 
+/**
+ * Calls that leave out --json on purpose, each with its reason: `predict --output` writes the CSV file, which --json
+ * replaces with JSON on stdout.
+ */
+const withoutJsonByDesign = [
+  { path: 'predict', when: (args) => args.includes('--output') || args.includes('-o') },
+];
+
 const failures = [];
 let calls = 0;
 for (const [exportName, tool] of Object.entries(tools)) {
@@ -116,6 +127,9 @@ function mismatches(args, toolName, params) {
   let i = 1;
   while (i < args.length && !args[i].startsWith('-') && help(path).subcommands.has(args[i])) path.push(args[i++]);
   const { options, positional } = help(path);
+  if (options.has('--json') && !args.includes('--json')
+      && !withoutJsonByDesign.some(e => e.path === path.join(' ') && e.when(args)))
+    found.push(`${toolName}: \`mloop ${path.join(' ')}\` has --json and the tool reads its console text  (${JSON.stringify(params)})`);
   for (; i < args.length; i++) {
     const arg = args[i];
     if (arg.startsWith('--')) {
@@ -130,7 +144,7 @@ function mismatches(args, toolName, params) {
 
 // The check must be able to see what it forbids: a command line with an option the CLI lacks, and a positional
 // argument to a command that takes none, are both reported — or the check is blind and says so.
-const blind = [['logs', '--no-such-option', 'x'], ['status', 'stray']]
+const blind = [['logs', '--no-such-option', 'x', '--json'], ['status', 'stray', '--json'], ['status']]
   .filter(args => mismatches(args, 'self-check', {}).length === 0);
 if (blind.length > 0) {
   console.error(`The check did not see a known mismatch: ${blind.map(a => 'mloop ' + a.join(' ')).join('; ')}`);

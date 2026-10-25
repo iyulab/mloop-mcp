@@ -23,7 +23,7 @@ export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): P
   try {
     // Step 1: Info (optional, for reporting)
     if (params.dataFile) {
-      const infoArgs = buildArgsWithPositional('info', [params.dataFile], {});
+      const infoArgs = buildArgsWithPositional('info', [params.dataFile], { json: true });
       await executeMloop(infoArgs, { cwd: params.projectPath });
       steps.push('Data profiled');
     }
