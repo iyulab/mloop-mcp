@@ -22,7 +22,8 @@ earlier) and a 2026-07-28 client opening with `server/discover`.
 ## Prerequisites
 
 - Node.js 22+
-- MLoop CLI installed and available in PATH
+- MLoop CLI 0.40 or later, installed and available in PATH (0.46.0 or later for the training tools to report
+  whether the experiment was promoted)
   ```bash
   dotnet tool install -g mloop
   ```
