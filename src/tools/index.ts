@@ -30,6 +30,9 @@ export { analyzeTool, analyze, analyzeSchema, type AnalyzeParams } from './analy
 export { detectTool, detect, detectSchema, type DetectParams } from './detect.js';
 export { prepPlanTool, prepPlan, prepPlanSchema, type PrepPlanParams } from './prep-plan.js';
 export { featuresSelectTool, featuresSelect, featuresSelectSchema, type FeaturesSelectParams } from './features-select.js';
+export { tokenTool, token, tokenSchema, type TokenParams } from './token.js';
+export { embedTool, embed, embedSchema, type EmbedParams } from './embed.js';
+export { encoderTool, encoder, encoderSchema, type EncoderParams } from './encoder.js';
 
 // Composite workflow tools
 export { quickStartTool, quickStart, quickStartSchema, type QuickStartParams } from './quick-start.js';
