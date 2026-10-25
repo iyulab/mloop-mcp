@@ -47,6 +47,8 @@ whether the experiment was promoted with `mloop` 0.46.0 or later.
 
 ### Fixed
 
+- `mloop_evaluate` given a test file without an experiment dropped the file — the CLI takes it only after an
+  experiment id — and evaluated on `datasets/test.csv` or failed. It now evaluates production on that file.
 - `mloop_train` and `mloop_auto_train` stopped a run after 10 and 20 minutes whatever its `time`, so a run asked
   for an hour was killed a sixth of the way in.
 - `mloop_serve` answered that the server was running in the background after its 5-second timeout — which is what

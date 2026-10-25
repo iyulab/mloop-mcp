@@ -29,17 +29,17 @@ export async function evaluate(params: EvaluateParams): Promise<{ content: Array
     // --json: the metrics, slices and comparison as one document, not the human tables.
     const args: string[] = ['evaluate'];
 
-    if (experimentId) {
-      args.push(experimentId);
-      // test-data is only valid after experiment-id
-      if (dataFile) {
-        args.push(dataFile);
-      }
+    // The test data follows the experiment id, so a file for the production model needs that model's id: it is
+    // read from `mloop list --json`, the CLI's own record of production, rather than the file being dropped.
+    const target = experimentId ?? (dataFile ? await productionExperiment(projectPath, modelName) : undefined);
+    if (dataFile && !target) {
+      return {
+        content: [{ type: 'text', text: `No production model for '${modelName ?? 'default'}' to evaluate on ${dataFile} — give experimentId, or promote one first.` }],
+        isError: true,
+      };
     }
-    // If only dataFile is given without experimentId, we cannot pass it as
-    // the CLI requires experiment-id before test-data. In this case, the caller
-    // should place the file at datasets/test.csv and omit dataFile, or provide
-    // an experimentId.
+    if (target) args.push(target);
+    if (dataFile) args.push(dataFile);
 
     // Named option: --name
     if (modelName) {
@@ -84,3 +84,10 @@ export const evaluateTool = {
   description: 'Evaluate a model\'s performance on test data, as JSON: test metrics beside the training metrics, per slice with sliceBy, weighted with weight. For a classifier, confusion: classes and counts[actual][predicted] (weighted sums under weight; per slice too) — read any class-set rate from it, e.g. the share of a must-catch class answered as a harmless one (mloop >= 0.39). With against (an experiment id or "production"), the other model is scored on the same rows and weights and the two are compared row by row: comparison.metrics, and comparison.paired — the per-row loss (error_rate for a classifier, squared_error for a regressor) of each, their difference (candidate − baseline), a 95% paired bootstrap interval, and verdict CandidateBetter / BaselineBetter / Indistinguishable. Use it to decide whether a staging candidate should replace production.',
   handler: evaluate,
 };
+
+/** The experiment in production for `modelName` (the default model when not given), or undefined. */
+async function productionExperiment(projectPath: string, modelName: string | undefined): Promise<string | undefined> {
+  const listed = await executeMloop(['list', '--json', ...(modelName ? ['--name', modelName] : [])], { cwd: projectPath });
+  const production = (JSON.parse(listed.stdout) as { production?: Record<string, string | null> }).production ?? {};
+  return production[modelName ?? 'default'] ?? undefined;
+}
