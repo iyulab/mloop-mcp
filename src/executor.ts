@@ -47,17 +47,12 @@ export async function executeMloop(
   const mloopPath = getMloopPath();
 
   return new Promise((resolve, reject) => {
-    // Build single command string for shell execution
-    // This avoids DEP0190 (passing args array with shell: true)
-    const quotedArgs = args.map(arg =>
-      arg.includes(' ') ? `"${arg}"` : arg
-    );
-    const command = `${mloopPath} ${quotedArgs.join(' ')}`;
-
-    const proc = spawn(command, [], {
+    // No shell: every argument reaches mloop exactly as given. Through a shell, a text, a file name or a label the
+    // caller passed was parsed as shell syntax — a quote or a `$(…)` in it ran as a command. The CLI is an executable
+    // on every platform (a dotnet tool installs `mloop.exe` on Windows), which spawn finds on PATH without one.
+    const proc = spawn(mloopPath, args, {
       cwd,
       env: { ...process.env, ...env },
-      shell: true, // Required for Windows PATH resolution
       windowsHide: true,
     });
 
