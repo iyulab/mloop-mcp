@@ -31,7 +31,7 @@
 | `mloop_sample` | A retraining dataset from a model's logged predictions and feedback (feedback under the model's label, weighted when feedback is), or a sample of a CSV | `projectPath, action` |
 | `mloop_trigger` | Check retrain triggers | `projectPath` |
 | `mloop_drift` | Input drift per column (PSI), answer drift, and per slice | `projectPath` |
-| `mloop_serve` | Start API server | `projectPath` |
+| `mloop_serve` | Start API server; returns once `/health` answers, with its URL, pid, log file and stop command — it keeps running after the call | `projectPath` |
 
 ## Recommended Workflows
 
