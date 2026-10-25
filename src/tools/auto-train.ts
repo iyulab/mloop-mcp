@@ -6,7 +6,6 @@ import { z } from 'zod';
 import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop, buildArgsWithPositional, buildArgs } from '../executor.js';
 import { runTraining } from '../training-run.js';
-import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
 
 export const autoTrainSchema = z.object({
@@ -45,7 +44,7 @@ export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): P
     // Step 3: List experiments
     const listOpts: Record<string, unknown> = {};
     if (params.modelName) listOpts['name'] = params.modelName;
-    const listArgs = buildArgs('list', listOpts);
+    const listArgs = buildArgs('list', { ...listOpts, json: true });
     const listResult = await executeMloop(listArgs, { cwd: params.projectPath });
     steps.push('Experiments listed');
 
@@ -57,7 +56,7 @@ export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): P
           summary: 'Auto-train complete',
           steps,
           training_output: trainOutput,
-          experiments: parseCliOutput(listResult.stdout),
+          experiments: JSON.parse(listResult.stdout),
         }, null, 2),
       }],
     };

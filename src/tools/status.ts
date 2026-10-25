@@ -17,7 +17,7 @@ export async function status(params: StatusParams): Promise<{ content: Array<{ t
   try {
     const { projectPath } = params;
 
-    const args: string[] = ['status'];
+    const args: string[] = ['status', '--json'];
 
     const result = await executeMloop(args, {
       cwd: projectPath,

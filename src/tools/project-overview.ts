@@ -4,7 +4,6 @@
 
 import { z } from 'zod';
 import { executeMloop, buildArgs } from '../executor.js';
-import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
 
 export const projectOverviewSchema = z.object({
@@ -21,9 +20,9 @@ export async function projectOverview(params: ProjectOverviewParams): Promise<{ 
 
     // Run status and list in parallel
     const [statusResult, listResult] = await Promise.all([
-      executeMloop(['status'], { cwd: params.projectPath })
+      executeMloop(['status', '--json'], { cwd: params.projectPath })
         .catch(e => ({ stdout: formatError(e), stderr: '', exitCode: 1 })),
-      executeMloop(buildArgs('list', nameOpts), { cwd: params.projectPath })
+      executeMloop(buildArgs('list', { ...nameOpts, json: true }), { cwd: params.projectPath })
         .catch(e => ({ stdout: formatError(e), stderr: '', exitCode: 1 })),
     ]);
 
@@ -33,8 +32,8 @@ export async function projectOverview(params: ProjectOverviewParams): Promise<{ 
         text: JSON.stringify({
           success: true,
           summary: 'Project overview',
-          status: parseCliOutput(statusResult.stdout),
-          experiments: parseCliOutput(listResult.stdout),
+          status: JSON.parse(statusResult.stdout),
+          experiments: JSON.parse(listResult.stdout),
         }, null, 2),
       }],
     };

@@ -19,7 +19,7 @@ export async function compare(params: CompareParams): Promise<{ content: Array<{
   try {
     const { projectPath, experiments, modelName } = params;
 
-    const args: string[] = ['compare', ...experiments];
+    const args: string[] = ['compare', ...experiments, '--json'];
     if (modelName) {
       args.push('--name', modelName);
     }

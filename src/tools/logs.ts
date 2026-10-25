@@ -21,6 +21,7 @@ export async function logs(params: LogsParams): Promise<{ content: Array<{ type:
     if (params.modelName) cliParams['name'] = params.modelName;
     if (params.limit) cliParams['limit'] = params.limit;
 
+    cliParams['json'] = true;
     const args = buildArgs('logs', cliParams);
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);

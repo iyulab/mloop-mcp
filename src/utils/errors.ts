@@ -53,6 +53,18 @@ export class CancelledError extends Error {
  */
 export function formatError(error: unknown): string {
   if (error instanceof CliExecutionError) {
+    // A command asked for --json that fails with a structured answer (validate's errors, a refused promotion) says
+    // so on stdout as JSON; that answer is the result, the console text on stderr repeats it for a person.
+    const answer = stripAnsi(error.stdout).trim();
+    if (answer.startsWith('{') || answer.startsWith('[')) {
+      try {
+        JSON.parse(answer);
+        return answer;
+      } catch {
+        // Not one JSON document — fall through to the full report.
+      }
+    }
+
     const parts = [`CLI Error (exit code ${error.exitCode})`];
 
     if (error.stderr) {

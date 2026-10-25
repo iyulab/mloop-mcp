@@ -15,7 +15,7 @@ export type ValidateParams = z.infer<typeof validateSchema>;
 
 export async function validate(params: ValidateParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const args: string[] = ['validate'];
+    const args: string[] = ['validate', '--json'];
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);
 

@@ -22,7 +22,7 @@ export async function info(params: InfoParams): Promise<{ content: Array<{ type:
   try {
     const { dataFile, projectPath, label, modelName, analyze, sampleSize } = params;
 
-    const args: string[] = ['info', dataFile];
+    const args: string[] = ['info', dataFile, '--json'];
     if (label) {
       args.push('--label', label);
     }

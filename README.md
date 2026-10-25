@@ -122,6 +122,11 @@ Every other tool runs its command with no wall-clock limit (how long it takes fo
 the call is cancelled or the command writes nothing for 20 minutes. `mloop_serve` returns once the server answers
 `/health` and leaves it running, naming its URL, process id, log file and the command that stops it.
 
+Tools answer the CLI's own JSON (`--json`) wherever the command has it — `mloop_list`, `mloop_compare`,
+`mloop_info`, `mloop_status`, `mloop_validate`, `mloop_logs` and the rest — so an agent reads fields rather than
+console tables. A command that fails with a structured answer (an invalid `mloop.yaml`, say) returns that JSON
+as the error.
+
 ### Run predictions
 
 ```json
