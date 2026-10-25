@@ -109,6 +109,13 @@ plugins:
 }
 ```
 
+The answer is the run's own result as JSON — `result` (experiment id, trainer, metrics, where the model and its
+report are) and the `warnings` the run raised. A call that carries a progress token gets a progress notification for
+each phase and, at most once a second, for the trial just finished (`trial 12: FastForest r_squared 0.8828 · 4.1 s of a
+60 s budget`). Cancelling the call stops the training process. A run with `time` is stopped well past its budget
+(the budget plus 10 minutes, or half again for budgets over 20 minutes); one without `time` sizes its own budget, so
+it is stopped only when it writes nothing for 20 minutes. `mloop_auto_train` trains the same way.
+
 ### Run predictions
 
 ```json

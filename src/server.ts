@@ -2,7 +2,7 @@
  * MCP Server for MLoop CLI
  */
 
-import { McpServer } from '@modelcontextprotocol/server';
+import { McpServer, type ServerContext } from '@modelcontextprotocol/server';
 import type { z } from 'zod';
 import {
   trainTool, trainSchema,
@@ -43,7 +43,8 @@ interface ToolDefinition {
   name: string;
   description: string;
   // Each handler takes its own schema's parameters; the server validates against that schema before calling it.
-  handler: (params: any) => Promise<ToolResult>;
+  // The request's context carries its cancellation and progress token, for the tools that run long.
+  handler: (params: any, ctx: ServerContext) => Promise<ToolResult>;
 }
 
 /** Every tool, with the schema its arguments are validated against — in the order `tools/list` names them. */
@@ -91,7 +92,7 @@ export function createServer(): McpServer {
     server.registerTool(
       tool.name,
       { description: tool.description, inputSchema: schema },
-      async (params) => tool.handler(params)
+      async (params, ctx) => tool.handler(params, ctx)
     );
   }
 

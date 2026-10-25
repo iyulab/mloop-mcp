@@ -3,9 +3,9 @@
  */
 
 import { z } from 'zod';
-import { executeMloop, buildArgsWithPositional } from '../executor.js';
-import { parseCliOutput } from '../utils/parser.js';
-import { formatError } from '../utils/errors.js';
+import type { ServerContext } from '@modelcontextprotocol/server';
+import { buildArgsWithPositional } from '../executor.js';
+import { runTraining } from '../training-run.js';
 
 export const trainSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
@@ -29,7 +29,7 @@ export const trainSchema = z.object({
 
 export type TrainParams = z.infer<typeof trainSchema>;
 
-export async function train(params: TrainParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
+export async function train(params: TrainParams, ctx?: ServerContext): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
     const { projectPath, dataFile, label, ...options } = params;
 
@@ -56,24 +56,19 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
     const args = buildArgsWithPositional('train', positional, cliParams);
     if (more.length > 0) args.push('--data', dataFile ?? 'datasets/train.csv', ...more);
 
-    const result = await executeMloop(args, {
-      cwd: projectPath,
-      timeout: 600_000, // 10 minutes for training
-    });
-
-    const output = parseCliOutput(result.stdout);
+    const outcome = await runTraining(args, projectPath, options.time, ctx);
 
     return {
       content: [{
         type: 'text',
-        text: output || 'Training completed successfully.',
+        text: JSON.stringify(outcome, null, 2),
       }],
     };
   } catch (error) {
     return {
       content: [{
         type: 'text',
-        text: formatError(error),
+        text: error instanceof Error ? error.message : String(error),
       }],
       isError: true,
     };
@@ -82,6 +77,6 @@ export async function train(params: TrainParams): Promise<{ content: Array<{ typ
 
 export const trainTool = {
   name: 'mloop_train',
-  description: 'Train an ML model using AutoML. Runs mloop train command with specified parameters.',
+  description: 'Train an ML model using AutoML. Runs mloop train command with specified parameters. Answers the run\'s result (experiment id, trainer, metrics, promotion) and warnings as JSON; reports progress per trial when the call carries a progress token; cancelling the call stops the run. Without time, the run sizes its own budget from the data.',
   handler: train,
 };

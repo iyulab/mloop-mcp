@@ -3,13 +3,22 @@
  */
 
 import { spawn } from 'child_process';
-import { CliExecutionError, TimeoutError } from './utils/errors.js';
+import { CancelledError, CliExecutionError, TimeoutError } from './utils/errors.js';
 
 export interface ExecuteOptions {
   /** Working directory for command execution */
   cwd?: string;
-  /** Timeout in milliseconds (default: 300000 = 5 minutes) */
-  timeout?: number;
+  /** Timeout in milliseconds (default: 300000 = 5 minutes); `null` for none — a run bounded by its own budget. */
+  timeout?: number | null;
+  /**
+   * Stops the command when it has written nothing for this long, in milliseconds — what tells a stalled run from a
+   * long one that is still reporting.
+   */
+  idleTimeout?: number;
+  /** Stops the command when aborted — the caller cancelled the request it runs for. */
+  signal?: AbortSignal;
+  /** Called with each complete line the command writes to stdout, as it arrives. */
+  onStdoutLine?: (line: string) => void;
   /** Environment variables to pass */
   env?: Record<string, string>;
 }
@@ -43,8 +52,10 @@ export async function executeMloop(
   args: string[],
   options: ExecuteOptions = {}
 ): Promise<ExecuteResult> {
-  const { cwd, timeout = DEFAULT_TIMEOUT, env } = options;
+  const { cwd, timeout = DEFAULT_TIMEOUT, idleTimeout, signal, onStdoutLine, env } = options;
   const mloopPath = getMloopPath();
+
+  if (signal?.aborted) throw new CancelledError();
 
   return new Promise((resolve, reject) => {
     // Build single command string for shell execution
@@ -59,28 +70,60 @@ export async function executeMloop(
       env: { ...process.env, ...env },
       shell: true, // Required for Windows PATH resolution
       windowsHide: true,
+      // Its own process group, so stopping it stops mloop and not only the shell that started it.
+      detached: process.platform !== 'win32',
     });
 
     let stdout = '';
     let stderr = '';
+    let pending = '';
     let killed = false;
 
-    const timeoutId = setTimeout(() => {
+    const stop = (error: Error) => {
+      if (killed) return;
       killed = true;
-      proc.kill('SIGTERM');
-      reject(new TimeoutError(`Command timed out after ${timeout}ms`, timeout));
-    }, timeout);
+      clearTimers();
+      killTree(proc.pid);
+      reject(error);
+    };
+
+    const timeoutId = timeout == null
+      ? undefined
+      : setTimeout(() => stop(new TimeoutError(`Command timed out after ${timeout}ms`, timeout)), timeout);
+    let idleId: ReturnType<typeof setTimeout> | undefined;
+    const touch = () => {
+      if (idleTimeout === undefined) return;
+      clearTimeout(idleId);
+      idleId = setTimeout(
+        () => stop(new TimeoutError(`Command wrote nothing for ${idleTimeout}ms`, idleTimeout)), idleTimeout);
+    };
+    const onAbort = () => stop(new CancelledError());
+    const clearTimers = () => {
+      clearTimeout(timeoutId);
+      clearTimeout(idleId);
+      signal?.removeEventListener('abort', onAbort);
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+    touch();
 
     proc.stdout?.on('data', (data: Buffer) => {
-      stdout += data.toString();
+      const text = data.toString();
+      stdout += text;
+      touch();
+      if (!onStdoutLine) return;
+      pending += text;
+      const lines = pending.split('\n');
+      pending = lines.pop() ?? '';
+      for (const line of lines) onStdoutLine(line.replace(/\r$/, ''));
     });
 
     proc.stderr?.on('data', (data: Buffer) => {
       stderr += data.toString();
+      touch();
     });
 
     proc.on('error', (error: Error) => {
-      clearTimeout(timeoutId);
+      clearTimers();
       reject(new CliExecutionError(
         `Failed to execute mloop: ${error.message}`,
         -1,
@@ -90,9 +133,10 @@ export async function executeMloop(
     });
 
     proc.on('close', (code: number | null) => {
-      clearTimeout(timeoutId);
+      clearTimers();
 
-      if (killed) return; // Already handled by timeout
+      if (killed) return; // Already rejected: timed out, idle or cancelled
+      if (onStdoutLine && pending) onStdoutLine(pending.replace(/\r$/, ''));
 
       const exitCode = code ?? 0;
       const result: ExecuteResult = { stdout, stderr, exitCode };
@@ -109,6 +153,17 @@ export async function executeMloop(
       }
     });
   });
+}
+
+/** Stops a command started by {@link executeMloop} and whatever it started. */
+function killTree(pid: number | undefined): void {
+  if (pid === undefined) return;
+  try {
+    if (process.platform === 'win32') spawn('taskkill', ['/pid', String(pid), '/T', '/F'], { windowsHide: true });
+    else process.kill(-pid, 'SIGTERM');
+  } catch {
+    // Already gone.
+  }
 }
 
 /**

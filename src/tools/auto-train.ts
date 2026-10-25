@@ -3,7 +3,9 @@
  */
 
 import { z } from 'zod';
+import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop, buildArgsWithPositional, buildArgs } from '../executor.js';
+import { runTraining } from '../training-run.js';
 import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
 
@@ -17,13 +19,13 @@ export const autoTrainSchema = z.object({
 
 export type AutoTrainParams = z.infer<typeof autoTrainSchema>;
 
-export async function autoTrain(params: AutoTrainParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
+export async function autoTrain(params: AutoTrainParams, ctx?: ServerContext): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   const steps: string[] = [];
   try {
     // Step 1: Info (optional, for reporting)
     if (params.dataFile) {
       const infoArgs = buildArgsWithPositional('info', [params.dataFile], {});
-      await executeMloop(infoArgs, { cwd: params.projectPath });
+      await executeMloop(infoArgs, { cwd: params.projectPath, signal: ctx?.mcpReq.signal });
       steps.push('Data profiled');
     }
 
@@ -37,18 +39,14 @@ export async function autoTrain(params: AutoTrainParams): Promise<{ content: Arr
     if (params.modelName) trainOpts['name'] = params.modelName;
 
     const trainArgs = buildArgsWithPositional('train', trainPositional, trainOpts);
-    const trainResult = await executeMloop(trainArgs, {
-      cwd: params.projectPath,
-      timeout: 1_200_000,
-    });
-    const trainOutput = parseCliOutput(trainResult.stdout);
+    const trainOutput = await runTraining(trainArgs, params.projectPath, params.time, ctx);
     steps.push('Training complete');
 
     // Step 3: List experiments
     const listOpts: Record<string, unknown> = {};
     if (params.modelName) listOpts['name'] = params.modelName;
     const listArgs = buildArgs('list', listOpts);
-    const listResult = await executeMloop(listArgs, { cwd: params.projectPath });
+    const listResult = await executeMloop(listArgs, { cwd: params.projectPath, signal: ctx?.mcpReq.signal });
     steps.push('Experiments listed');
 
     return {

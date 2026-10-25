@@ -39,6 +39,16 @@ export class TimeoutError extends Error {
 }
 
 /**
+ * The request a command ran for was cancelled, and the command was stopped.
+ */
+export class CancelledError extends Error {
+  constructor() {
+    super('Cancelled: the request was cancelled and the command stopped');
+    this.name = 'CancelledError';
+  }
+}
+
+/**
  * Format error for MCP response
  */
 export function formatError(error: unknown): string {
@@ -56,7 +66,7 @@ export function formatError(error: unknown): string {
   }
 
   if (error instanceof TimeoutError) {
-    return `Timeout: Command did not complete within ${error.timeoutMs}ms`;
+    return `Timeout: ${error.message}`;
   }
 
   if (error instanceof Error) {

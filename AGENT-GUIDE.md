@@ -13,7 +13,7 @@
 | `mloop_detect` | One-shot TS-anomaly detection + SPC bounds (no training) | `dataPath, column?, threshold?, sensitivity?` |
 | `mloop_prep_plan` | Declare a prep step in mloop.yaml (policy only) as JSON | `projectPath, set?/remove?, columns?` |
 | `mloop_features_select` | Declare feature include/exclude in mloop.yaml (policy only) as JSON | `projectPath, drop?/keep?/reset?` |
-| `mloop_train` | Train model; `additionalDataFiles` merges more files (a retraining set from `mloop_sample`), `weight` trains on its weight column | `projectPath, dataFile?, label?, time?` |
+| `mloop_train` | Train model; `additionalDataFiles` merges more files (a retraining set from `mloop_sample`), `weight` trains on its weight column; answers the run's `result` and `warnings` as JSON, reports per-trial progress to a progress token, and stops the run when the call is cancelled | `projectPath, dataFile?, label?, time?` |
 | `mloop_predict` | Run predictions (production, or a candidate by `experimentId`) | `projectPath, dataFile?, experimentId?` |
 | `mloop_list` | List experiments | `projectPath` |
 | `mloop_promote` | Promote to production (ID or auto: latest/best); refused by the quality gate unless `force` | `projectPath, experimentId? \| latest? \| best?, force?` |
