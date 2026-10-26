@@ -2,9 +2,11 @@
 
 All notable changes to `@iyulab/mloop-mcp` are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
-Releases before 0.11.3 are described by their commits. Unreleased work on main includes the 0.11.3 fix.
+Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.3 fix.
 
 ## [Unreleased]
+
+## [0.12.0] - 2026-10-26
 
 Every tool works with `mloop` 0.40 or later; `mloop_train`, `mloop_auto_train` and `mloop_quick_start` report
 whether the experiment was promoted with `mloop` 0.46.0 or later.
