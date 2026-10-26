@@ -26,7 +26,7 @@ export async function quickStart(params: QuickStartParams, ctx?: ServerContext):
   try {
     // Step 1: Init (ensure directory exists)
     mkdirSync(params.projectPath, { recursive: true });
-    const initArgs = buildArgsWithPositional('init', ['.'], { task: params.task });
+    const initArgs = buildArgsWithPositional('init', ['.'], { task: params.task, json: true });
     await executeMloop(initArgs, { cwd: params.projectPath });
     steps.push('Project initialized');
 

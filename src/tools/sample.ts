@@ -27,15 +27,15 @@ export function sampleArgs(params: SampleParams): string[] {
   const cliParams: Record<string, unknown> = {};
   if (params.action === 'create') {
     cliParams['from'] = params.dataFile;
-    cliParams['model'] = params.dataFile ? undefined : (params.modelName ?? 'default');
+    cliParams['name'] = params.dataFile ? undefined : (params.modelName ?? 'default');
     cliParams['rows'] = params.size;
     cliParams['strategy'] = params.strategy;
     cliParams['label'] = params.label;
     cliParams['output'] = params.output;
   } else {
-    cliParams['model'] = params.modelName;
-    cliParams['json'] = true;
+    cliParams['name'] = params.modelName;
   }
+  cliParams['json'] = true;
   return buildArgsWithPositional('sample', [params.action], cliParams);
 }
 

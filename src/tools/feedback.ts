@@ -29,9 +29,9 @@ export function feedbackArgs(params: FeedbackParams): string[] {
     cliParams['source'] = params.source;
     cliParams['weight'] = params.weight;
   } else {
-    cliParams['model'] = params.modelName;
-    cliParams['json'] = true;
+    cliParams['name'] = params.modelName;
   }
+  cliParams['json'] = true;
   return buildArgsWithPositional('feedback', [params.action], cliParams);
 }
 

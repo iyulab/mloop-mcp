@@ -21,7 +21,7 @@ export async function init(params: InitParams): Promise<{ content: Array<{ type:
     // Ensure project directory exists
     mkdirSync(params.projectPath, { recursive: true });
 
-    const args = buildArgsWithPositional('init', ['.'], { task: params.task });
+    const args = buildArgsWithPositional('init', ['.'], { task: params.task, json: true });
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);
 

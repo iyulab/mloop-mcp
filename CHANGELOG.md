@@ -6,6 +6,17 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+`mloop_feedback`, `mloop_sample`, `mloop_init` and `mloop_quick_start` need `mloop` 0.47 or later; the other tools
+work with `mloop` 0.40 or later as before.
+
+### Changed
+
+- **Breaking for a server run against an older `mloop`:** `mloop_feedback` (list, metrics) and `mloop_sample` name the
+  model with `--name` — the CLI's spelling for a model name since 0.47, where `--model` now means a model file — and
+  ask for `--json`.
+- `mloop_init`, `mloop_feedback` (add) and `mloop_sample` (create) answer the command's JSON (`--json`, new in `mloop`
+  0.47) instead of its console text, as every other tool does; `mloop_quick_start` initialises through the same JSON.
+
 ## [0.12.0] - 2026-10-26
 
 Every tool works with `mloop` 0.40 or later; `mloop_train`, `mloop_auto_train` and `mloop_quick_start` report
