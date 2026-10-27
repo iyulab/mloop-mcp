@@ -14,6 +14,8 @@ export const evaluateSchema = z.object({
   experimentId: z.string().optional().describe('Specific experiment to evaluate'),
   sliceBy: z.string().optional().describe('Also report the metrics for each value of this column of the test data'),
   weight: z.string().optional().describe('Column that weights the test rows (defaults to the experiment\'s training weight when the file has it)'),
+  normalClass: z.string().optional().describe('image-anomaly: the subfolder of the test folder that holds the normal pictures (default: normal, good or ok); every other subfolder is anomalous (mloop >= 0.47)'),
+  records: z.string().optional().describe('For a JSON test file: the dotted path to the array whose items are the rows'),
   against: z.string().optional().describe('Also evaluate this experiment id (or "production") on the same rows and weights, and compare the two row by row (mloop >= 0.39)'),
 });
 
@@ -21,7 +23,7 @@ export type EvaluateParams = z.infer<typeof evaluateSchema>;
 
 export async function evaluate(params: EvaluateParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, experimentId, sliceBy, weight, against } = params;
+    const { projectPath, dataFile, modelName, experimentId, sliceBy, weight, against, normalClass, records } = params;
 
     // CLI usage: mloop evaluate [<experiment-id> [<test-data>]] [options]
     // Both experiment-id and test-data are positional arguments
@@ -53,6 +55,12 @@ export async function evaluate(params: EvaluateParams): Promise<{ content: Array
     }
     if (against) {
       args.push('--against', against);
+    }
+    if (normalClass) {
+      args.push('--normal-class', normalClass);
+    }
+    if (records) {
+      args.push('--records', records);
     }
     args.push('--json');
 

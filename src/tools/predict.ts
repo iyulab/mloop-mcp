@@ -15,6 +15,8 @@ export const predictSchema = z.object({
     .describe('Predict with this experiment (e.g. a staging candidate) instead of production — production does not move'),
   output: z.string().optional().describe('Output file path'),
   log: z.boolean().optional().describe('Log the predictions; without an output file each returned row carries the predictionId that feedback takes'),
+  includeFeatures: z.boolean().optional().describe('Whether the output file repeats the input feature columns (the CLI default is yes; false leaves them out)'),
+  records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
   unknownStrategy: z.enum(['auto', 'error', 'use-most-frequent', 'use-missing']).optional()
     .describe('Strategy for handling unknown categorical values in prediction data'),
 });
@@ -23,7 +25,7 @@ export type PredictParams = z.infer<typeof predictSchema>;
 
 export async function predict(params: PredictParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, experimentId, output, log, unknownStrategy } = params;
+    const { projectPath, dataFile, modelName, experimentId, output, log, unknownStrategy, includeFeatures, records } = params;
 
     // dataFile is a positional argument
     const positional: string[] = [];
@@ -35,6 +37,8 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
     if (output) cliParams['output'] = output;
     if (log) cliParams['log'] = true;
     if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
+    if (includeFeatures === false) cliParams['include-features'] = 'false';
+    if (records) cliParams['records'] = records;
 
     // Structured propagation: without an explicit output file, request `--json` so the agent receives the
     // full prediction rows (predictedLabel, probabilities, conformal band, and the normalized `confidence`

@@ -83,3 +83,24 @@ test('mloop_quick_start needs no label for a task that learns without one', asyn
     assert.ok(!args.includes('--label'));
   });
 });
+
+test('mloop_evaluate and mloop_predict pass the normal-class, records and include-features options', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_evaluate',
+      arguments: { projectPath: dir, experimentId: 'exp-001', dataFile: 'test-pictures', normalClass: 'fine', records: 'data.items' },
+    });
+    let args = argv();
+    assert.equal(args[args.indexOf('--normal-class') + 1], 'fine');
+    assert.equal(args[args.indexOf('--records') + 1], 'data.items');
+
+    await client.callTool({
+      name: 'mloop_predict',
+      arguments: { projectPath: dir, dataFile: 'p.json', records: 'rows', output: 'out.csv', includeFeatures: false },
+    });
+    args = argv();
+    assert.equal(args[0], 'predict');
+    assert.equal(args[args.indexOf('--records') + 1], 'rows');
+    assert.equal(args[args.indexOf('--include-features') + 1], 'false');
+  });
+});

@@ -15,6 +15,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 - `mloop_train` passes `groupColumn` (ranking), `encoder` and `bankSize` (image-anomaly), `maxRows`, `samplingStrategy`, `seed` and
   `records` (a JSON data file's row path) to the matching `mloop train` options.
   `encoder`, `bankSize` and the `image-anomaly` task need `mloop` 0.47 or later.
+- `mloop_evaluate` takes `normalClass` (the subfolder of normal pictures for an image-anomaly model) and `records`; `mloop_predict` takes `records` and
+  `includeFeatures` (false leaves the input columns out of the output file).
 
 ### Changed
 
