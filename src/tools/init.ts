@@ -7,10 +7,11 @@ import { mkdirSync } from 'fs';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
 import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
+import { taskSchema } from '../tasks.js';
 
 export const initSchema = z.object({
   projectPath: z.string().describe('Path to create/initialize the MLoop project'),
-  task: z.enum(['binary-classification', 'multiclass-classification', 'regression'])
+  task: taskSchema
     .describe('ML task type for this project'),
 });
 

@@ -6,14 +6,15 @@ import { z } from 'zod';
 import type { ServerContext } from '@modelcontextprotocol/server';
 import { buildArgsWithPositional } from '../executor.js';
 import { runTraining } from '../training-run.js';
+import { taskSchema } from '../tasks.js';
 
 export const trainSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   dataFile: z.string().optional().describe('Training data file (default: datasets/train.csv)'),
   label: z.string().optional().describe('Label column name'),
-  task: z.enum(['binary-classification', 'multiclass-classification', 'regression'])
+  task: taskSchema
     .optional()
-    .describe('ML task type'),
+    .describe('ML task type (default: the project\'s, from mloop.yaml)'),
   time: z.number().positive().optional().describe('Training time in seconds'),
   metric: z.string().optional().describe('Optimization metric'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
@@ -25,6 +26,13 @@ export const trainSchema = z.object({
   additionalDataFiles: z.array(z.string()).optional().describe(
     'Files merged after dataFile (e.g. a retraining set from mloop_sample create); a file without the weight column counts its rows 1'),
   portable: z.boolean().optional().describe('Train only with steps ONNX can express, so mloop_export_onnx can export the model'),
+  groupColumn: z.string().optional().describe('Ranking: the column that groups rows into query contexts'),
+  encoder: z.string().optional().describe('image-anomaly: the installed image encoder the pictures are embedded with (default: the only one installed — see mloop_encoder)'),
+  bankSize: z.number().int().positive().optional().describe('image-anomaly: the most patches the bank holds; a limit keeps a coreset of the patches (default: every patch)'),
+  maxRows: z.number().int().positive().optional().describe('Most training rows; more are sampled'),
+  samplingStrategy: z.enum(['random', 'stratified']).optional().describe('How rows are sampled when maxRows applies (default: by task)'),
+  seed: z.number().int().optional().describe('Random seed for the sampling (default: 42)'),
+  records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -52,6 +60,13 @@ export async function train(params: TrainParams, ctx?: ServerContext): Promise<{
     if (options.dropMissingLabels) cliParams['drop-missing-labels'] = true;
     if (options.weight) cliParams['weight'] = options.weight;
     if (options.portable) cliParams['portable'] = true;
+    if (options.groupColumn) cliParams['group-column'] = options.groupColumn;
+    if (options.encoder) cliParams['encoder'] = options.encoder;
+    if (options.bankSize) cliParams['bank-size'] = options.bankSize;
+    if (options.maxRows) cliParams['max-rows'] = options.maxRows;
+    if (options.samplingStrategy) cliParams['sampling-strategy'] = options.samplingStrategy;
+    if (options.seed !== undefined) cliParams['seed'] = options.seed;
+    if (options.records) cliParams['records'] = options.records;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
     if (more.length > 0) args.push('--data', dataFile ?? 'datasets/train.csv', ...more);

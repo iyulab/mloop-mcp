@@ -4,10 +4,10 @@
 
 | Tool | Purpose | Key Params |
 |------|---------|------------|
-| `mloop_quick_start` | Zero to production in one call | `projectPath, dataFile, label, task` |
+| `mloop_quick_start` | Zero to production in one call (any task; `label` only for the tasks that have one) | `projectPath, dataFile, label?, task` |
 | `mloop_auto_train` | Retrain with auto-time | `projectPath, dataFile?` |
 | `mloop_project_overview` | Full project status | `projectPath` |
-| `mloop_init` | Initialize project | `projectPath, task` |
+| `mloop_init` | Initialize project — any of the 16 tasks (`regression`, `binary-classification`, `multiclass-classification`, `anomaly-detection`, `clustering`, `ranking`, `forecasting`, `time-series-anomaly`, `image-classification`, `object-detection`, `image-anomaly`, `text-classification`, `sentence-similarity`, `ner`, `question-answering`, `recommendation`) | `projectPath, task` |
 | `mloop_info` | Profile dataset | `dataFile, projectPath?` |
 | `mloop_analyze` | One read-only EDA aspect as JSON | `aspect, dataFile, label?` |
 | `mloop_detect` | One-shot TS-anomaly detection + SPC bounds (no training) | `dataPath, column?, threshold?, sensitivity?` |

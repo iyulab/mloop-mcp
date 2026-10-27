@@ -8,12 +8,13 @@ import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
 import { runTraining } from '../training-run.js';
 import { formatError } from '../utils/errors.js';
+import { taskSchema } from '../tasks.js';
 
 export const quickStartSchema = z.object({
   projectPath: z.string().describe('Project directory path'),
-  dataFile: z.string().describe('Training data CSV file path'),
-  label: z.string().describe('Label column name'),
-  task: z.enum(['binary-classification', 'multiclass-classification', 'regression'])
+  dataFile: z.string().describe('Training data: a CSV (or other table) file, or for the image tasks a folder of pictures'),
+  label: z.string().optional().describe('Label column name (omit for tasks that learn without one: clustering, anomaly-detection, image-anomaly, ...)'),
+  task: taskSchema
     .describe('ML task type'),
   time: z.number().positive().optional()
     .describe('Training time in seconds (omit for auto-time)'),
@@ -31,7 +32,8 @@ export async function quickStart(params: QuickStartParams, ctx?: ServerContext):
     steps.push('Project initialized');
 
     // Step 2: Train (auto-time if time not specified)
-    const trainParams: Record<string, unknown> = { label: params.label };
+    const trainParams: Record<string, unknown> = {};
+    if (params.label) trainParams['label'] = params.label;
     if (params.time) trainParams['time'] = params.time;
     const trainArgs = buildArgsWithPositional('train', [params.dataFile], trainParams);
     const training = await runTraining(trainArgs, params.projectPath, params.time, ctx);

@@ -6,6 +6,20 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_init`, `mloop_train` and `mloop_quick_start` take every task the `mloop` CLI has — all sixteen, where they listed three
+  (`regression` and the two classification tasks) and an agent could not start a forecasting, clustering, image or text project.
+  The list is one module (`src/tasks.ts`); `npm run check:cli` now also compares it with `mloop init --help` and reports a task the
+  tools lack or one the CLI does not know.
+- `mloop_train` passes `groupColumn` (ranking), `encoder` and `bankSize` (image-anomaly), `maxRows`, `samplingStrategy`, `seed` and
+  `records` (a JSON data file's row path) to the matching `mloop train` options.
+  `encoder`, `bankSize` and the `image-anomaly` task need `mloop` 0.47 or later.
+
+### Changed
+
+- `mloop_quick_start`'s `label` is optional (omit it for a task that learns without one) and its `dataFile` may be a folder of pictures.
+
 ## [0.13.0] - 2026-10-27
 
 `mloop_feedback`, `mloop_sample`, `mloop_init` and `mloop_quick_start` need `mloop` 0.47 or later; the other tools

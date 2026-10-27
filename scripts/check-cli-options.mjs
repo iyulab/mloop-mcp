@@ -88,7 +88,7 @@ function help(path) {
     const subcommands = new Set();
     const section = text.split(/\n(?=\S)/).find(s => /^Commands:/.test(s)) ?? '';
     for (const m of section.matchAll(/^\s{2}(\S+)/gm)) subcommands.add(m[1].split(/[\s,]/)[0]);
-    helpCache.set(key, { options, subcommands, positional: /^Arguments:/m.test(text) });
+    helpCache.set(key, { options, subcommands, positional: /^Arguments:/m.test(text), text });
   }
   return helpCache.get(key);
 }
@@ -117,6 +117,37 @@ for (const [exportName, tool] of Object.entries(tools)) {
       failures.push(...mismatches(JSON.parse(line), tool.name, params));
     }
   }
+}
+
+/**
+ * The task types the CLI lists, from `mloop init --help` ("-t, --task <task>  ML task type (a, b, c) [default: …]").
+ * Read the other way round from the option check above: that one finds a tool passing what the CLI lacks; this one finds
+ * a tool that cannot say what the CLI can.
+ */
+function cliTasks() {
+  const text = help(['init']).text;
+  const list = /--task <task>\s+ML task type \(([^)]*)\)/.exec(text)?.[1];
+  if (!list) {
+    console.error('Cannot read the task list from `mloop init --help`.');
+    process.exit(2);
+  }
+  return list.split(',').map(t => t.trim()).filter(Boolean);
+}
+
+/** How a tool's `task` values differ from the CLI's list, or nothing when they are the same set. */
+function taskDifference(toolName, values, cli) {
+  const missing = cli.filter(t => !values.includes(t));
+  const extra = values.filter(t => !cli.includes(t));
+  return [
+    ...(missing.length ? [`${toolName}: \`task\` lacks the CLI's ${missing.join(', ')}`] : []),
+    ...(extra.length ? [`${toolName}: \`task\` lists ${extra.join(', ')}, which the CLI does not know`] : []),
+  ];
+}
+
+for (const [exportName, tool] of Object.entries(tools)) {
+  if (!exportName.endsWith('Tool')) continue;
+  const task = tools[exportName.replace(/Tool$/, 'Schema')]?.shape?.task;
+  if (task && unwrap(task)._def.type === 'enum') failures.push(...taskDifference(tool.name, unwrap(task).options, cliTasks()));
 }
 
 /** The ways one recorded command line does not fit the CLI. */
@@ -148,6 +179,13 @@ const blind = [['logs', '--no-such-option', 'x', '--json'], ['status', 'stray', 
   .filter(args => mismatches(args, 'self-check', {}).length === 0);
 if (blind.length > 0) {
   console.error(`The check did not see a known mismatch: ${blind.map(a => 'mloop ' + a.join(' ')).join('; ')}`);
+  process.exit(1);
+}
+
+// ...and a task list missing one of the CLI's, or naming one it lacks, is reported.
+if (taskDifference('self-check', ['regression'], ['regression', 'clustering']).length !== 1
+    || taskDifference('self-check', ['regression', 'nope'], ['regression']).length !== 1) {
+  console.error('The check did not see a known task-list mismatch.');
   process.exit(1);
 }
 
