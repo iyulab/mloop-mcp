@@ -6,6 +6,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-27
+
 `mloop_feedback`, `mloop_sample`, `mloop_init` and `mloop_quick_start` need `mloop` 0.47 or later; the other tools
 work with `mloop` 0.40 or later as before.
 
