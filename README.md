@@ -34,7 +34,7 @@ If MLoop is not in PATH, set the `MLOOP_PATH` environment variable:
 
 ```bash
 # Windows
-set MLOOP_PATH=D:\lib\mloop.exe
+set MLOOP_PATH=%USERPROFILE%\tools\mloop.exe
 
 # Linux/macOS
 export MLOOP_PATH=/usr/local/bin/mloop
