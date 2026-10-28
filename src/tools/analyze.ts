@@ -14,13 +14,15 @@ import { formatError } from '../utils/errors.js';
 
 export const analyzeSchema = z.object({
   aspect: z
-    .enum(['profile', 'correlation', 'importance', 'outliers', 'distribution'])
+    .enum(['profile', 'correlation', 'importance', 'outliers', 'distribution', 'series'])
     .describe(
       'EDA aspect to compute: "profile" (column types, null %, cardinality, constant columns), ' +
         '"correlation" (high-correlation pairs + multicollinearity), ' +
         '"importance" (feature-importance ranking, requires a label), ' +
         '"outliers" (count/rate/isolation-forest threshold), ' +
-        '"distribution" (skewness/kurtosis/normality tests)'
+        '"distribution" (skewness/kurtosis/normality tests), ' +
+        '"series" (one column read as an ordered series: autocorrelation/partial autocorrelation with their bands, ' +
+        'ADF and KPSS stationarity tests read together, dominant period; needs mloop 0.48 or later)'
     ),
   dataFile: z
     .string()
@@ -35,6 +37,20 @@ export const analyzeSchema = z.object({
     .string()
     .optional()
     .describe('Label/target column name (overrides mloop.yaml; required for the "importance" aspect)'),
+  column: z
+    .string()
+    .optional()
+    .describe('Series column to analyze (only the "series" aspect; optional when the CSV has a single column)'),
+  maxLag: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('Largest lag of the autocorrelation functions (only "series"; default min(10*log10 n, n - 1))'),
+  aroundTrend: z
+    .boolean()
+    .optional()
+    .describe('Test stationarity around a linear trend instead of a constant level (only "series")'),
   modelName: z
     .string()
     .optional()
@@ -47,11 +63,18 @@ export async function analyze(
   params: AnalyzeParams
 ): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { aspect, dataFile, projectPath, label, modelName } = params;
+    const { aspect, dataFile, projectPath, label, modelName, column, maxLag, aroundTrend } = params;
 
     const cliParams: Record<string, unknown> = {};
-    if (label) cliParams['label'] = label;
-    if (modelName) cliParams['name'] = modelName;
+    if (aspect === 'series') {
+      // A series has no label and no model: its options are the column and the two test choices.
+      if (column) cliParams['column'] = column;
+      if (maxLag !== undefined) cliParams['maxLag'] = maxLag;
+      if (aroundTrend) cliParams['aroundTrend'] = true;
+    } else {
+      if (label) cliParams['label'] = label;
+      if (modelName) cliParams['name'] = modelName;
+    }
     // Always emit the structured JSON envelope for LLM consumption.
     cliParams['json'] = true;
 
@@ -91,6 +114,6 @@ export const analyzeTool = {
   description:
     'Run a single, read-only exploratory-data-analysis (EDA) aspect on a dataset and return a ' +
     'structured JSON envelope for feature-engineering decisions. Aspects: profile, correlation, ' +
-    'importance (needs a label), outliers, distribution. Never mutates the data file or mloop.yaml.',
+    'importance (needs a label), outliers, distribution, series (a column as an ordered series). Never mutates the data file or mloop.yaml.',
   handler: analyze,
 };

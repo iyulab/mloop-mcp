@@ -48,7 +48,7 @@ Use `mloop_auto_train` — profiles data, trains with auto-time, lists results.
 Use `mloop_project_overview` — returns status, experiments, and production metrics.
 
 ### Detailed Step-by-Step (multiple calls)
-1. `mloop_info` — understand data (or `mloop_analyze <aspect>` for one EDA dimension as JSON: profile, correlation, importance, outliers, distribution)
+1. `mloop_info` — understand data (or `mloop_analyze <aspect>` for one EDA dimension as JSON: profile, correlation, importance, outliers, distribution, series — `series` reads a column as an ordered series: ACF/PACF, ADF + KPSS, period)
 2. `mloop_init` — create project
    - Record feature-engineering decisions from the analysis (policy only, no data change): `mloop_features_select` to drop/keep columns, `mloop_prep_plan` to declare scaling/normalization (each step's JSON reports its leakage `category`/`foldSafe`)
 3. `mloop_train` — train model

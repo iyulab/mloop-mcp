@@ -18,6 +18,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 - `mloop_evaluate` takes `normalClass` (the subfolder of normal pictures for an image-anomaly model) and `records`; `mloop_predict` takes `records` and
   `includeFeatures` (false leaves the input columns out of the output file).
 
+- `mloop_analyze` takes the `series` aspect with `column`, `maxLag` and `aroundTrend`: one column read as an ordered series, answered as the
+  autocorrelation and partial autocorrelation functions with their bands, the ADF and KPSS stationarity tests read together, and the
+  dominant period. It needs `mloop` 0.48 or later. A label and a model name are not used by this aspect and are not passed.
+
 ### Changed
 
 - `mloop_quick_start`'s `label` is optional (omit it for a task that learns without one) and its `dataFile` may be a folder of pictures.

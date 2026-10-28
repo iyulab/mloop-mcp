@@ -104,3 +104,35 @@ test('mloop_evaluate and mloop_predict pass the normal-class, records and includ
     assert.equal(args[args.indexOf('--include-features') + 1], 'false');
   });
 });
+
+test('mloop_analyze passes a series aspect its column and test options, and no label or model name', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_analyze',
+      arguments: {
+        aspect: 'series', dataFile: 'sensor.csv', projectPath: dir, column: 'temp', maxLag: 24, aroundTrend: true,
+        label: 'ignored', modelName: 'ignored',
+      },
+    });
+    const args = argv();
+    assert.deepEqual(args.slice(0, 3), ['analyze', 'series', 'sensor.csv']);
+    assert.equal(args[args.indexOf('--column') + 1], 'temp');
+    assert.equal(args[args.indexOf('--max-lag') + 1], '24');
+    assert.ok(args.includes('--around-trend'));
+    assert.ok(args.includes('--json'));
+    assert.ok(!args.includes('--label') && !args.includes('--name'));
+  });
+});
+
+test('mloop_analyze still passes the label and model name to the aspects that use them', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_analyze',
+      arguments: { aspect: 'importance', dataFile: 'train.csv', projectPath: dir, label: 'y', modelName: 'm' },
+    });
+    const args = argv();
+    assert.equal(args[args.indexOf('--label') + 1], 'y');
+    assert.equal(args[args.indexOf('--name') + 1], 'm');
+    assert.ok(!args.includes('--column'));
+  });
+});

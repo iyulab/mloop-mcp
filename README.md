@@ -83,7 +83,7 @@ plugins:
 | `mloop_calibrate` | Fit a classifier's probability calibration (binary platt · isotonic, multiclass temperature) on labeled rows without retraining, show it, or clear it (mloop >= 0.40) |
 | `mloop_export_onnx` | Model as ONNX + manifest (inputs and their data columns, outputs, classes, hashes) for runtimes without ML.NET |
 | `mloop_info` | Analyze and profile datasets |
-| `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution) as structured JSON |
+| `mloop_analyze` | Run one read-only EDA aspect (profile/correlation/importance/outliers/distribution/series) as structured JSON |
 | `mloop_drift` | Recent inputs and answers vs the training data — PSI per column, for the answers (mloop >= 0.39), for free-text columns by length and unseen words (mloop >= 0.40), per slice, as JSON (mloop >= 0.38) |
 | `mloop_detect` | One-shot time-series anomaly detection with SPC bounds — no training, no project required (mloop >= 0.21) |
 | `mloop_prep_plan` | Declare a preprocessing step in mloop.yaml (policy only, no data change) as structured JSON |
