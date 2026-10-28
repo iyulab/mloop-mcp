@@ -21,6 +21,13 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 - `mloop_analyze` takes the `series` aspect with `column`, `maxLag` and `aroundTrend`: one column read as an ordered series, answered as the
   autocorrelation and partial autocorrelation functions with their bands, the ADF and KPSS stationarity tests read together, and the
   dominant period. It needs `mloop` 0.48 or later. A label and a model name are not used by this aspect and are not passed.
+- Every tool now carries the four MCP safety hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`), so a client's
+  approval policy can read what a tool may do instead of guessing from its name. Twelve tools only read (`mloop_list`, `mloop_status`,
+  `mloop_info`, `mloop_analyze`, `mloop_compare`, `mloop_evaluate`, `mloop_validate`, `mloop_logs`, `mloop_trigger`, `mloop_drift`,
+  `mloop_embed`, `mloop_project_overview`) and so does `mloop_token`; the rest write, and those that can overwrite a file at a path
+  the caller names or delete a setting, a threshold or an installed encoder say `destructiveHint: true`. The hints live in one table
+  (`src/tool-hints.ts`) and the server refuses to start with a tool that has none.
+- The repository and the package carry a `LICENSE` file (MIT, as `package.json` already declared).
 - `mloop_threshold` takes `guarantee`, a risk such as 0.05 used with `precision`: the threshold is then the lowest one whose
   precision is certified to reach the target (wrong in at most that share of the files it could be run on) instead of the lowest
   one that reached it on the file, and the command refuses, writing nothing, when the file has too few rows to carry the

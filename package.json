@@ -53,6 +53,7 @@
   "files": [
     "build",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ]
 }

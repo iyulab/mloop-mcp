@@ -39,6 +39,7 @@ import {
 } from './tools/index.js';
 import { packageVersion } from './package-info.js';
 import { withRequestSignal } from './executor.js';
+import { hintsFor } from './tool-hints.js';
 
 type ToolResult = { content: Array<{ type: 'text'; text: string }>; isError?: boolean };
 
@@ -98,7 +99,7 @@ export function createServer(): McpServer {
   for (const [tool, schema] of tools) {
     server.registerTool(
       tool.name,
-      { description: tool.description, inputSchema: schema },
+      { description: tool.description, inputSchema: schema, annotations: hintsFor(tool.name) },
       async (params, ctx) => withRequestSignal(ctx.mcpReq.signal, () => tool.handler(params, ctx))
     );
   }

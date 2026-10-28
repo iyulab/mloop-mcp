@@ -96,6 +96,12 @@ plugins:
 | `mloop_embed` | Images or texts to vectors with a pretrained encoder, with the encoder's identity (texts: mloop >= 0.46) |
 | `mloop_encoder` | List, install (catalog: `dinov2-small`, `multilingual-minilm`) or remove pretrained encoders |
 
+Every tool declares the MCP safety hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) in `tools/list`, so a
+client can apply an approval policy without reading tool names: the reading tools (`mloop_list`, `mloop_status`, `mloop_info`,
+`mloop_analyze`, `mloop_compare`, `mloop_evaluate`, `mloop_validate`, `mloop_logs`, `mloop_trigger`, `mloop_drift`, `mloop_embed`,
+`mloop_project_overview`, `mloop_token`) change nothing; the others write, and `destructiveHint: true` marks the ones that can overwrite a
+file at a path you name or delete a setting, a threshold or an installed encoder. The table is `src/tool-hints.ts`.
+
 ## Tool Examples
 
 ### Train a model
