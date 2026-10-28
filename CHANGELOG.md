@@ -21,6 +21,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 - `mloop_analyze` takes the `series` aspect with `column`, `maxLag` and `aroundTrend`: one column read as an ordered series, answered as the
   autocorrelation and partial autocorrelation functions with their bands, the ADF and KPSS stationarity tests read together, and the
   dominant period. It needs `mloop` 0.48 or later. A label and a model name are not used by this aspect and are not passed.
+- `mloop_threshold` takes `guarantee`, a risk such as 0.05 used with `precision`: the threshold is then the lowest one whose
+  precision is certified to reach the target (wrong in at most that share of the files it could be run on) instead of the lowest
+  one that reached it on the file, and the command refuses, writing nothing, when the file has too few rows to carry the
+  guarantee. It needs `mloop` 0.48 or later.
 
 ### Changed
 

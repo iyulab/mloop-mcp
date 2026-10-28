@@ -124,6 +124,21 @@ test('mloop_analyze passes a series aspect its column and test options, and no l
   });
 });
 
+test('mloop_threshold passes a guarantee as --guarantee and leaves the flag out when none is given', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_threshold',
+      arguments: { projectPath: dir, precision: 0.9, guarantee: 0.05, dataFile: 'recheck.csv' },
+    });
+    const withIt = argv();
+    assert.equal(withIt[withIt.indexOf('--guarantee') + 1], '0.05');
+    assert.equal(withIt[withIt.indexOf('--precision') + 1], '0.9');
+
+    await client.callTool({ name: 'mloop_threshold', arguments: { projectPath: dir, precision: 0.9, dataFile: 'recheck.csv' } });
+    assert.ok(!argv().includes('--guarantee'));
+  });
+});
+
 test('mloop_analyze still passes the label and model name to the aspects that use them', async () => {
   await withClient(async client => {
     await client.callTool({
