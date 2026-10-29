@@ -16,6 +16,7 @@ export const trainSchema = z.object({
     .optional()
     .describe('ML task type (default: the project\'s, from mloop.yaml)'),
   time: z.number().positive().optional().describe('Training time in seconds'),
+  maxTrials: z.number().int().positive().optional().describe('Stop the trainer search after this many trials, within time — the same search on a fast machine and a slow one. Tasks that run no search (clustering, anomaly detection, recommendation, forecasting, deep learning) refuse it'),
   metric: z.string().optional().describe('Optimization metric'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
   balance: z.string().optional().describe('Class balancing strategy for classification (image classification included — it oversamples its training split): "auto" (balance to 10:1), "none", or target ratio (e.g., "5" for 5:1)'),
@@ -52,6 +53,7 @@ export async function train(params: TrainParams, ctx?: ServerContext): Promise<{
     if (label) cliParams['label'] = label;
     if (options.task) cliParams['task'] = options.task;
     if (options.time) cliParams['time'] = options.time;
+    if (options.maxTrials) cliParams['max-trials'] = options.maxTrials;
     if (options.metric) cliParams['metric'] = options.metric;
     if (options.modelName) cliParams['name'] = options.modelName;
     if (options.balance) cliParams['balance'] = options.balance;

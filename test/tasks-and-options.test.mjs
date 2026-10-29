@@ -58,7 +58,7 @@ test('mloop_train passes the image-anomaly, ranking and sampling options as CLI 
       name: 'mloop_train',
       arguments: {
         projectPath: dir, dataFile: 'pictures', task: 'image-anomaly', encoder: 'dinov2-small', bankSize: 5000,
-        groupColumn: 'query', maxRows: 1000, samplingStrategy: 'stratified', seed: 7, records: 'data.items',
+        groupColumn: 'query', maxRows: 1000, samplingStrategy: 'stratified', seed: 7, records: 'data.items', maxTrials: 12,
       },
     });
     const args = argv();
@@ -72,6 +72,7 @@ test('mloop_train passes the image-anomaly, ranking and sampling options as CLI 
     assert.equal(value('--sampling-strategy'), 'stratified');
     assert.equal(value('--seed'), '7');
     assert.equal(value('--records'), 'data.items');
+    assert.equal(value('--max-trials'), '12');
   });
 });
 

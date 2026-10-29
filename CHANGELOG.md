@@ -8,6 +8,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ### Added
 
+- `mloop_train` takes `maxTrials`, passed as `mloop train --max-trials`: the trainer search stops after that many trials within `time`, so the
+  same call trains the same search on a fast machine and a slow one. Needs an `mloop` that has the flag; a task that runs no search refuses it.
 - `mloop_init`, `mloop_train` and `mloop_quick_start` take every task the `mloop` CLI has — all sixteen, where they listed three
   (`regression` and the two classification tasks) and an agent could not start a forecasting, clustering, image or text project.
   The list is one module (`src/tasks.ts`); `npm run check:cli` now also compares it with `mloop init --help` and reports a task the
