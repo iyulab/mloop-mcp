@@ -6,6 +6,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-30
+
 ### Added
 
 - `mloop_train` takes `maxTrials`, passed as `mloop train --max-trials`: the trainer search stops after that many trials within `time`, so the
