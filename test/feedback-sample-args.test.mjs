@@ -39,6 +39,13 @@ test('sample create from logs names the model with --name, from a file does not 
   assert.ok(file.includes('--from') && !file.includes('--name') && file.includes('--json'), file.join(' '));
 });
 
+test('sample create from a JSON file carries the array of rows; from logs it does not', () => {
+  const json = sampleArgs({ projectPath: project, action: 'create', dataFile: 'a.json', records: 'data.rows' });
+  assert.deepEqual(json.slice(json.indexOf('--records'), json.indexOf('--records') + 2), ['--records', 'data.rows'], json.join(' '));
+  const logs = sampleArgs({ projectPath: project, action: 'create', modelName: 'm', records: 'data.rows' });
+  assert.ok(!logs.includes('--records'), logs.join(' '));
+});
+
 test('sample stats names the model with --name and asks for JSON', () => {
   const args = sampleArgs({ projectPath: project, action: 'stats', modelName: 'm' });
   assert.ok(args.includes('--name') && args.includes('--json') && !args.includes('--model'), args.join(' '));

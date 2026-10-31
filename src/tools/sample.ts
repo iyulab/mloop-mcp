@@ -1,5 +1,5 @@
 /**
- * mloop_sample tool - Sample data from CSV files or prediction logs
+ * mloop_sample tool - Sample data from data files (CSV, TSV, JSON, Excel, Parquet) or prediction logs
  */
 
 import { z } from 'zod';
@@ -12,7 +12,8 @@ export const sampleSchema = z.object({
   action: z.enum(['create', 'stats']).describe('Sample action to perform'),
   modelName: z.string().optional().describe(
     'Model whose logged predictions and feedback to sample ("create": a retraining dataset — the feedback under the model\'s label, weighted when feedback carries weights; "stats": default "default")'),
-  dataFile: z.string().optional().describe('CSV file to sample from instead of prediction logs ("create" only)'),
+  dataFile: z.string().optional().describe('Data file to sample from instead of prediction logs — CSV, TSV, JSON, Excel or Parquet; the sample is written as CSV ("create" only)'),
+  records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows ("create" only)'),
   size: z.number().int().positive().optional().describe('Number of rows to sample (default 1000)'),
   strategy: z.string().optional().describe(
     'Sampling strategy — logs: random, recent, feedback-priority, stratified, low-confidence; CSV: random, head, stratified'),
@@ -27,6 +28,7 @@ export function sampleArgs(params: SampleParams): string[] {
   const cliParams: Record<string, unknown> = {};
   if (params.action === 'create') {
     cliParams['from'] = params.dataFile;
+    cliParams['records'] = params.dataFile ? params.records : undefined;
     cliParams['name'] = params.dataFile ? undefined : (params.modelName ?? 'default');
     cliParams['rows'] = params.size;
     cliParams['strategy'] = params.strategy;
@@ -63,6 +65,6 @@ export async function sample(params: SampleParams): Promise<{ content: Array<{ t
 
 export const sampleTool = {
   name: 'mloop_sample',
-  description: 'Create a sampled dataset — from a model\'s logged predictions and feedback (a retraining dataset: feedback under the model\'s label, with a weight column when feedback carries weights) or from a CSV file — or view sampling statistics.',
+  description: 'Create a sampled dataset — from a model\'s logged predictions and feedback (a retraining dataset: feedback under the model\'s label, with a weight column when feedback carries weights) or from a data file (CSV, TSV, JSON, Excel, Parquet; written as CSV) — or view sampling statistics.',
   handler: sample,
 };
