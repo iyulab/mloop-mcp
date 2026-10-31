@@ -95,6 +95,16 @@ plugins:
 | `mloop_token` | Issue the bearer token the server requires on every endpoint but `/health` (`role: admin` for writes) |
 | `mloop_embed` | Images or texts to vectors with a pretrained encoder, with the encoder's identity (texts: mloop >= 0.46) |
 | `mloop_encoder` | List, install (catalog: `dinov2-small`, `multilingual-minilm`) or remove pretrained encoders |
+| `mloop_init` | Initialize a new MLoop project (`mloop.yaml`, `datasets/`, `models/`) |
+| `mloop_quick_start` | One step from zero to a production model: initialize, train, auto-promote |
+| `mloop_auto_train` | Profile the data, train with an automatic time budget and list the experiments in one call |
+| `mloop_project_overview` | Status, every experiment and the production model's metrics in one call |
+| `mloop_validate` | Validate `mloop.yaml` (syntax, missing fields, invalid values) |
+| `mloop_prep` | Run a model's declared preprocessing steps over a CSV file and write the prepared file |
+| `mloop_logs` | View a model's prediction logs |
+| `mloop_feedback` | Add the actual value for a logged prediction (source, optional weight), list feedback, or read its metrics |
+| `mloop_sample` | Create a sampled dataset from a CSV file, or a retraining dataset from logged predictions and feedback |
+| `mloop_trigger` | Check whether retraining is due, as JSON: one result per condition |
 
 Every tool declares the MCP safety hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) in `tools/list`, so a
 client can apply an approval policy without reading tool names: the reading tools (`mloop_list`, `mloop_status`, `mloop_info`,
