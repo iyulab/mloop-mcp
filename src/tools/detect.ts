@@ -14,15 +14,17 @@ export const detectSchema = z.object({
   threshold: z.number().positive().optional().describe("Score above which a point is an anomaly (> 0; the score is a point's saliency relative to the points before it; default 3)"),
   sensitivity: z.number().gt(0).lt(100).optional().describe('Coverage of the control limits in percent (0-100, exclusive; 99.73 = 3 sigma; default 99.73)'),
   output: z.string().optional().describe('Also write the full per-point result to this CSV file'),
+  records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
 });
 
 export type DetectParams = z.infer<typeof detectSchema>;
 
 export async function detect(params: DetectParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { dataPath, column, threshold, sensitivity, output } = params;
+    const { dataPath, column, threshold, sensitivity, output, records } = params;
 
     const cliParams: Record<string, unknown> = {};
+    if (records) cliParams['records'] = records;
     if (column) cliParams['column'] = column;
     if (threshold !== undefined) cliParams['threshold'] = threshold;
     if (sensitivity !== undefined) cliParams['sensitivity'] = sensitivity;

@@ -10,6 +10,8 @@ import { formatError } from '../utils/errors.js';
 export const triggerSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
+  accuracy: z.number().min(0).max(1).optional().describe('Accuracy threshold (0.0-1.0): the accuracy condition is met when feedback accuracy drops below it (default: the project\'s)'),
+  feedback: z.number().int().nonnegative().optional().describe('Feedback volume threshold: the volume condition is met once this many feedback rows have come in (default: the project\'s)'),
 });
 
 export type TriggerParams = z.infer<typeof triggerSchema>;
@@ -18,6 +20,8 @@ export async function trigger(params: TriggerParams): Promise<{ content: Array<{
   try {
     const cliParams: Record<string, unknown> = {};
     if (params.modelName) cliParams['name'] = params.modelName;
+    if (params.accuracy !== undefined) cliParams['accuracy'] = params.accuracy;
+    if (params.feedback !== undefined) cliParams['feedback'] = params.feedback;
     cliParams['json'] = true;
 
     const args = buildArgsWithPositional('trigger', ['check'], cliParams);

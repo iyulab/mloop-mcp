@@ -11,6 +11,8 @@ export const logsSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
   limit: z.number().positive().optional().describe('Maximum number of log entries to show'),
+  from: z.string().optional().describe('Only entries from this day on (yyyy-MM-dd)'),
+  to: z.string().optional().describe('Only entries up to this day (yyyy-MM-dd)'),
 });
 
 export type LogsParams = z.infer<typeof logsSchema>;
@@ -20,6 +22,8 @@ export async function logs(params: LogsParams): Promise<{ content: Array<{ type:
     const cliParams: Record<string, unknown> = {};
     if (params.modelName) cliParams['name'] = params.modelName;
     if (params.limit) cliParams['limit'] = params.limit;
+    if (params.from) cliParams['from'] = params.from;
+    if (params.to) cliParams['to'] = params.to;
 
     cliParams['json'] = true;
     const args = buildArgs('logs', cliParams);

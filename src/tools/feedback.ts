@@ -16,6 +16,9 @@ export const feedbackSchema = z.object({
   source: z.string().optional().describe('Where the value came from, e.g. "human", "reviewer-llm" (for "add")'),
   weight: z.number().nonnegative().optional().describe(
     'How much this row counts in training and evaluation built from feedback — for a row reviewed with probability p, 1/p (for "add"; default 1)'),
+  limit: z.number().int().positive().optional().describe('Maximum number of entries to show (for "list"; default 20)'),
+  from: z.string().optional().describe('Only entries from this day on (yyyy-MM-dd; for "list" and "metrics")'),
+  to: z.string().optional().describe('Only entries up to this day (yyyy-MM-dd; for "list" and "metrics")'),
 });
 
 export type FeedbackParams = z.infer<typeof feedbackSchema>;
@@ -30,6 +33,9 @@ export function feedbackArgs(params: FeedbackParams): string[] {
     cliParams['weight'] = params.weight;
   } else {
     cliParams['name'] = params.modelName;
+    if (params.action === 'list') cliParams['limit'] = params.limit;
+    cliParams['from'] = params.from;
+    cliParams['to'] = params.to;
   }
   cliParams['json'] = true;
   return buildArgsWithPositional('feedback', [params.action], cliParams);

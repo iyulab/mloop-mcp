@@ -17,13 +17,14 @@ export const thresholdSchema = z.object({
   dataFile: z.string().optional().describe('Labeled evaluation file the threshold is chosen on (required with precision)'),
   weight: z.string().optional().describe('Column that weights the rows'),
   clear: z.boolean().optional().describe('Remove the threshold: the model answers at 0.5 again'),
+  records: z.string().optional().describe('For a JSON dataFile: the dotted path to the array whose items are the rows'),
 });
 
 export type ThresholdParams = z.infer<typeof thresholdSchema>;
 
 export async function threshold(params: ThresholdParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, modelName, precision, precisionOf, guarantee, dataFile, weight, clear } = params;
+    const { projectPath, experimentId, modelName, precision, precisionOf, guarantee, dataFile, weight, clear, records } = params;
 
     const args: string[] = ['threshold'];
     if (experimentId) args.push(experimentId);
@@ -33,6 +34,7 @@ export async function threshold(params: ThresholdParams): Promise<{ content: Arr
     if (guarantee !== undefined) args.push('--guarantee', String(guarantee));
     if (dataFile) args.push('--data', dataFile);
     if (weight) args.push('--weight', weight);
+    if (records) args.push('--records', records);
     if (clear) args.push('--clear');
     args.push('--json');
 

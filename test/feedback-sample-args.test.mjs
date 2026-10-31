@@ -18,6 +18,15 @@ test('feedback list and metrics name the model with --name and ask for JSON', ()
   }
 });
 
+test('feedback list carries limit and the day range; metrics carries the range but no limit', () => {
+  const range = { from: '2026-10-01', to: '2026-10-31' };
+  const list = feedbackArgs({ projectPath: project, action: 'list', limit: 5, ...range });
+  assert.ok(list.includes('--limit') && list[list.indexOf('--limit') + 1] === '5', list.join(' '));
+  assert.ok(list[list.indexOf('--from') + 1] === range.from && list[list.indexOf('--to') + 1] === range.to, list.join(' '));
+  const metrics = feedbackArgs({ projectPath: project, action: 'metrics', limit: 5, ...range });
+  assert.ok(metrics.includes('--from') && metrics.includes('--to') && !metrics.includes('--limit'), metrics.join(' '));
+});
+
 test('feedback add asks for JSON and carries the weight', () => {
   const args = feedbackArgs({ projectPath: project, action: 'add', predictionId: 'p1', value: 'yes', source: 'human', weight: 2 });
   assert.ok(args.includes('--json') && args.includes('--prediction-id') && args.includes('--weight'), args.join(' '));

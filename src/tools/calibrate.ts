@@ -15,13 +15,14 @@ export const calibrateSchema = z.object({
   method: z.enum(['platt', 'isotonic', 'temperature']).optional().describe('Binary: platt (default; steady on a few hundred rows) or isotonic (no shape assumed, needs more rows). Multiclass: temperature (default; answers unchanged)'),
   weight: z.string().optional().describe('Column that weights the rows (1/π for a recheck sample)'),
   clear: z.boolean().optional().describe('Remove the calibration: the model answers with its own probabilities again'),
+  records: z.string().optional().describe('For a JSON dataFile: the dotted path to the array whose items are the rows'),
 });
 
 export type CalibrateParams = z.infer<typeof calibrateSchema>;
 
 export async function calibrate(params: CalibrateParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, modelName, dataFile, method, weight, clear } = params;
+    const { projectPath, experimentId, modelName, dataFile, method, weight, clear, records } = params;
 
     const args: string[] = ['calibrate'];
     if (experimentId) args.push(experimentId);
@@ -29,6 +30,7 @@ export async function calibrate(params: CalibrateParams): Promise<{ content: Arr
     if (dataFile) args.push('--data', dataFile);
     if (method) args.push('--method', method);
     if (weight) args.push('--weight', weight);
+    if (records) args.push('--records', records);
     if (clear) args.push('--clear');
     args.push('--json');
 

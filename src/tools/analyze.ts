@@ -55,6 +55,10 @@ export const analyzeSchema = z.object({
     .string()
     .optional()
     .describe('Model name to read label configuration from mloop.yaml (default: "default")'),
+  records: z
+    .string()
+    .optional()
+    .describe('For a JSON data file: the dotted path to the array whose items are the rows'),
 });
 
 export type AnalyzeParams = z.infer<typeof analyzeSchema>;
@@ -63,9 +67,10 @@ export async function analyze(
   params: AnalyzeParams
 ): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { aspect, dataFile, projectPath, label, modelName, column, maxLag, aroundTrend } = params;
+    const { aspect, dataFile, projectPath, label, modelName, column, maxLag, aroundTrend, records } = params;
 
     const cliParams: Record<string, unknown> = {};
+    if (records) cliParams['records'] = records;
     if (aspect === 'series') {
       // A series has no label and no model: its options are the column and the two test choices.
       if (column) cliParams['column'] = column;

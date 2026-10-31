@@ -11,17 +11,19 @@ export const listSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   modelName: z.string().optional().describe('Filter by model name'),
   showAll: z.boolean().optional().describe('Include failed experiments'),
+  trials: z.string().optional().describe('An experiment ID: show its trial leaderboard (every candidate the search tried, e.g. a clustering run\'s K = 2..10) instead of the experiment overview'),
 });
 
 export type ListParams = z.infer<typeof listSchema>;
 
 export async function list(params: ListParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, modelName, showAll } = params;
+    const { projectPath, modelName, showAll, trials } = params;
 
     const cliParams: Record<string, unknown> = {};
     if (modelName) cliParams['name'] = modelName;
     if (showAll) cliParams['all'] = true;
+    if (trials) cliParams['trials'] = trials;
     // Structured output (mloop >= 0.21): experiments array + production map — no table scraping.
     cliParams['json'] = true;
 

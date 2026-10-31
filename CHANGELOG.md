@@ -11,6 +11,11 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 - `mloop_train` takes `epochs`, passed as `mloop train --epochs`: how many epochs a deep-learning task (text classification, sentence similarity, NER,
   question answering, object detection) trains for. `time` does not shorten such a fit, so the epoch count is its one dial on cost - try 2 first to see
   what an epoch costs on the machine. Needs an `mloop` that has the flag; a task that does not count epochs refuses it.
+- Options the CLI had and the tools could not pass now are fields: `records` (the dotted path to the rows of a JSON data file) on `mloop_info`,
+  `mloop_analyze`, `mloop_threshold`, `mloop_calibrate` and `mloop_detect`; `trials` on `mloop_list` (one experiment's trial leaderboard);
+  `from` / `to` on `mloop_logs` and `mloop_feedback` (`list`, `metrics`) and `limit` on `mloop_feedback` `list`; `accuracy` and `feedback`
+  thresholds on `mloop_trigger`; `best`, `metric` and `metricsFile` on `mloop_compare` (its `experiments` may now be left out, to compare the
+  model's completed experiments); `model` (a model file) on `mloop_predict`.
 
 ## [0.14.0] - 2026-10-30
 

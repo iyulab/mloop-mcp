@@ -14,13 +14,14 @@ export const infoSchema = z.object({
   modelName: z.string().optional().describe('Model name to read label configuration from mloop.yaml (default: "default")'),
   analyze: z.boolean().optional().describe('Enable deep analysis including correlation, feature importance, distribution, and anomaly detection'),
   sampleSize: z.number().optional().describe('Maximum number of rows to sample for deep analysis (default: 50000)'),
+  records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
 });
 
 export type InfoParams = z.infer<typeof infoSchema>;
 
 export async function info(params: InfoParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { dataFile, projectPath, label, modelName, analyze, sampleSize } = params;
+    const { dataFile, projectPath, label, modelName, analyze, sampleSize, records } = params;
 
     const args: string[] = ['info', dataFile, '--json'];
     if (label) {
@@ -34,6 +35,9 @@ export async function info(params: InfoParams): Promise<{ content: Array<{ type:
     }
     if (sampleSize !== undefined && sampleSize !== null) {
       args.push('--sample-size', String(sampleSize));
+    }
+    if (records) {
+      args.push('--records', records);
     }
 
     const result = await executeMloop(args, {

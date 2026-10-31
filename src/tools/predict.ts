@@ -13,6 +13,7 @@ export const predictSchema = z.object({
   modelName: z.string().optional().describe('Model name'),
   experimentId: z.string().optional()
     .describe('Predict with this experiment (e.g. a staging candidate) instead of production — production does not move'),
+  model: z.string().optional().describe('Path to a model file to predict with instead of the production model'),
   output: z.string().optional().describe('Output file path'),
   log: z.boolean().optional().describe('Log the predictions; without an output file each returned row carries the predictionId that feedback takes'),
   includeFeatures: z.boolean().optional().describe('Whether the output file repeats the input feature columns (the CLI default is yes; false leaves them out)'),
@@ -25,7 +26,7 @@ export type PredictParams = z.infer<typeof predictSchema>;
 
 export async function predict(params: PredictParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, experimentId, output, log, unknownStrategy, includeFeatures, records } = params;
+    const { projectPath, dataFile, modelName, model, experimentId, output, log, unknownStrategy, includeFeatures, records } = params;
 
     // dataFile is a positional argument
     const positional: string[] = [];
@@ -34,6 +35,7 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
     const cliParams: Record<string, unknown> = {};
     if (modelName) cliParams['name'] = modelName;
     if (experimentId) cliParams['experiment'] = experimentId;
+    if (model) cliParams['model'] = model;
     if (output) cliParams['output'] = output;
     if (log) cliParams['log'] = true;
     if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
