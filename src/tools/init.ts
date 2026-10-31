@@ -13,6 +13,8 @@ export const initSchema = z.object({
   projectPath: z.string().describe('Path to create/initialize the MLoop project'),
   task: taskSchema
     .describe('ML task type for this project'),
+  modelName: z.string().optional().describe('Name of the first model (default: "default")'),
+  label: z.string().optional().describe('Label column name (can be set later in mloop.yaml; default: "Label")'),
 });
 
 export type InitParams = z.infer<typeof initSchema>;
@@ -22,7 +24,12 @@ export async function init(params: InitParams): Promise<{ content: Array<{ type:
     // Ensure project directory exists
     mkdirSync(params.projectPath, { recursive: true });
 
-    const args = buildArgsWithPositional('init', ['.'], { task: params.task, json: true });
+    const args = buildArgsWithPositional('init', ['.'], {
+      task: params.task,
+      ...(params.modelName ? { name: params.modelName } : {}),
+      ...(params.label ? { label: params.label } : {}),
+      json: true,
+    });
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);
 

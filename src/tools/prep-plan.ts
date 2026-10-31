@@ -25,6 +25,7 @@ export const prepPlanSchema = z.object({
     .describe('Comma-separated target columns for the --set/--remove step (e.g. "a,b")'),
   remove: z.string().optional().describe('Remove prep step(s) of this type'),
   modelName: z.string().optional().describe('Model name in mloop.yaml (default: "default")'),
+  list: z.boolean().optional().describe('List the current prep steps'),
 });
 
 export type PrepPlanParams = z.infer<typeof prepPlanSchema>;
@@ -33,12 +34,13 @@ export async function prepPlan(
   params: PrepPlanParams
 ): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, set, columns, remove, modelName } = params;
+    const { projectPath, set, columns, remove, modelName, list } = params;
 
     const cliParams: Record<string, unknown> = {};
     if (set) cliParams['set'] = set;
     if (columns) cliParams['columns'] = columns;
     if (remove) cliParams['remove'] = remove;
+    if (list) cliParams['list'] = true;
     if (modelName) cliParams['name'] = modelName;
     // Always emit the structured JSON envelope for LLM consumption.
     cliParams['json'] = true;

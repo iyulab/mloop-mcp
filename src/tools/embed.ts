@@ -13,15 +13,16 @@ export const embedSchema = z.object({
   texts: z.array(z.string()).max(256).optional().describe('Texts to embed with a text encoder, at most 256 — instead of images'),
   encoder: z.string().optional().describe('The encoder to use (mloop_encoder list); may be left out when only one of the kind is installed'),
   patches: z.boolean().optional().describe('Also one vector per patch of each image, on the encoder\'s grid (images only, at most 8)'),
+  textFile: z.string().optional().describe('A UTF-8 file of texts to embed, one per line (at most 256 together with texts) — instead of images'),
 });
 
 export type EmbedParams = z.infer<typeof embedSchema>;
 
 export async function embed(params: EmbedParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
-  const { projectPath, images = [], texts = [], encoder, patches } = params;
-  if ((images.length === 0) === (texts.length === 0)) {
+  const { projectPath, images = [], texts = [], textFile, encoder, patches } = params;
+  if ((images.length === 0) === (texts.length === 0 && !textFile)) {
     return {
-      content: [{ type: 'text', text: 'Give either images or texts to embed (one of the two, not both).' }],
+      content: [{ type: 'text', text: 'Give either images or texts (texts or textFile) to embed (one of the two, not both).' }],
       isError: true,
     };
   }
@@ -29,6 +30,7 @@ export async function embed(params: EmbedParams): Promise<{ content: Array<{ typ
   try {
     const args: string[] = ['embed', ...images];
     for (const text of texts) args.push('--text', text);
+    if (textFile) args.push('--text-file', textFile);
     if (encoder) args.push('--encoder', encoder);
     if (patches) args.push('--patches');
     args.push('--json');

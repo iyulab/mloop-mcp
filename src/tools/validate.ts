@@ -9,6 +9,7 @@ import { formatError } from '../utils/errors.js';
 
 export const validateSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
+  verbose: z.boolean().optional().describe('Detailed validation results'),
 });
 
 export type ValidateParams = z.infer<typeof validateSchema>;
@@ -16,6 +17,7 @@ export type ValidateParams = z.infer<typeof validateSchema>;
 export async function validate(params: ValidateParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
     const args: string[] = ['validate', '--json'];
+    if (params.verbose) args.push('--verbose');
     const result = await executeMloop(args, { cwd: params.projectPath });
     const output = parseCliOutput(result.stdout);
 

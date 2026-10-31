@@ -7,7 +7,7 @@ import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop } from './executor.js';
 import { CliExecutionError, formatError } from './utils/errors.js';
 
-/** One line of `mloop train --json`: phase · trial · warning · result · error. */
+/** One line of `mloop train --json`: phase · trial · warning · result · promotion · analysis · script · error. */
 interface TrainEvent {
   event: string;
   [key: string]: unknown;
@@ -16,10 +16,16 @@ interface TrainEvent {
 /**
  * What a finished run answers: the `result` event, the `promotion` event (whether it went to production, and why not),
  * and the warnings it raised on the way. `promotion` is null from a CLI older than the event.
+ *
+ * A run that only checks the data (`--analyze-data`) trains nothing and has no `result`: it answers with `analysis`
+ * (the findings, an empty list when there were none) and, with `--generate-script`, `script` (the path it wrote). Both
+ * are null from a CLI older than those events, whose `--analyze-data --json` said nothing at all.
  */
 export interface TrainingOutcome {
   result: TrainEvent | null;
   promotion: TrainEvent | null;
+  analysis: TrainEvent | null;
+  script: TrainEvent | null;
   warnings: string[];
 }
 
@@ -54,6 +60,8 @@ export async function runTraining(
   const warnings: string[] = [];
   let result: TrainEvent | null = null;
   let promotion: TrainEvent | null = null;
+  let analysis: TrainEvent | null = null;
+  let script: TrainEvent | null = null;
 
   const progress = (message: string, force: boolean) => {
     if (token === undefined || ctx === undefined) return;
@@ -93,6 +101,12 @@ export async function runTraining(
       case 'promotion':
         promotion = event;
         break;
+      case 'analysis':
+        analysis = event;
+        break;
+      case 'script':
+        script = event;
+        break;
     }
   };
 
@@ -112,7 +126,7 @@ export async function runTraining(
     }
     throw new Error(formatError(error));
   }
-  return { result, promotion, warnings };
+  return { result, promotion, analysis, script, warnings };
 }
 
 function parse(line: string): TrainEvent | null {

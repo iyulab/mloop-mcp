@@ -35,6 +35,10 @@ export const trainSchema = z.object({
   samplingStrategy: z.enum(['random', 'stratified']).optional().describe('How rows are sampled when maxRows applies (default: by task)'),
   seed: z.number().int().optional().describe('Random seed for the sampling (default: 42)'),
   records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
+  analyzeData: z.boolean().optional().describe('Check the data quality and train nothing: the answer carries `analysis` (each finding with a suggested fix; an empty list when there are none) instead of a result'),
+  generateScript: z.string().optional().describe('Write a preprocessing script from the data check to this path. With analyzeData the run stops there (the answer carries `script`); without it, it goes on to train'),
+  autoMerge: z.boolean().optional().describe('Detect and merge the CSV files of the same schema in datasets/ into the training data'),
+  autoTime: z.boolean().optional().describe('true: size the time budget from the data even when mloop.yaml sets one; false: no estimation, the 300 s default budget; leave out: the run decides (a given `time` always wins)'),
 });
 
 export type TrainParams = z.infer<typeof trainSchema>;
@@ -71,6 +75,11 @@ export async function train(params: TrainParams, ctx?: ServerContext): Promise<{
     if (options.samplingStrategy) cliParams['sampling-strategy'] = options.samplingStrategy;
     if (options.seed !== undefined) cliParams['seed'] = options.seed;
     if (options.records) cliParams['records'] = options.records;
+    if (options.analyzeData) cliParams['analyze-data'] = true;
+    if (options.generateScript) cliParams['generate-script'] = options.generateScript;
+    if (options.autoMerge) cliParams['auto-merge'] = true;
+    if (options.autoTime === true) cliParams['auto-time'] = true;
+    if (options.autoTime === false) cliParams['no-auto-time'] = true;
 
     const args = buildArgsWithPositional('train', positional, cliParams);
     if (more.length > 0) args.push('--data', dataFile ?? 'datasets/train.csv', ...more);

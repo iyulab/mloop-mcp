@@ -16,6 +16,13 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
   `from` / `to` on `mloop_logs` and `mloop_feedback` (`list`, `metrics`) and `limit` on `mloop_feedback` `list`; `accuracy` and `feedback`
   thresholds on `mloop_trigger`; `best`, `metric` and `metricsFile` on `mloop_compare` (its `experiments` may now be left out, to compare the
   model's completed experiments); `model` (a model file) on `mloop_predict`.
+- `mloop_train` takes `analyzeData` (check the data quality and train nothing), `generateScript` (write a preprocessing script from that check), `autoMerge`
+  (merge the CSV files of one schema in `datasets/`) and `autoTime` (`true` sizes the time budget from the data even where `mloop.yaml` sets one, `false`
+  keeps the 300 s default). The answer of a data check carries `analysis` (the findings, each with a suggested fix; an empty list when there are none) and,
+  with `generateScript`, `script` (the path written) in place of `result`. The events come from an `mloop` newer than 0.48: older ones say nothing for
+  `--analyze-data --json`, and both fields are then null.
+- `decideOnly` on `mloop_promote` (report what `latest`/`best` would promote and move nothing), `modelName` and `label` on `mloop_init`, `verbose` on
+  `mloop_status` and `mloop_validate`, `list` on `mloop_prep_plan`, and `textFile` on `mloop_embed` (a file of texts, one per line).
 
 ## [0.14.0] - 2026-10-30
 

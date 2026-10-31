@@ -9,15 +9,17 @@ import { formatError } from '../utils/errors.js';
 
 export const statusSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
+  verbose: z.boolean().optional().describe('Detailed status: more than the overview of each model'),
 });
 
 export type StatusParams = z.infer<typeof statusSchema>;
 
 export async function status(params: StatusParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath } = params;
+    const { projectPath, verbose } = params;
 
     const args: string[] = ['status', '--json'];
+    if (verbose) args.push('--verbose');
 
     const result = await executeMloop(args, {
       cwd: projectPath,
