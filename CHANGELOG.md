@@ -30,6 +30,12 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
   `mloop_docker` (write the Dockerfile and docker-compose.yml that serve a model). `mloop_encoder` also takes `add`: register an encoder of your own from its
   definition file, ONNX graph and, for a text encoder, tokenizer.
 
+### Fixed
+
+- The package's `repository` field names this repository (`iyulab/mloop-mcp`). It pointed at the `MLoop` repository with a `mcp` directory, which that repository does
+  not have, so the npm page linked to a repository that does not hold this code (and a provenance statement made from this repository's
+  workflow would not have matched it).
+
 ## [0.14.0] - 2026-10-30
 
 ### Added
