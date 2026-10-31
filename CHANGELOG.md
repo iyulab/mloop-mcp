@@ -6,6 +6,12 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_train` takes `epochs`, passed as `mloop train --epochs`: how many epochs a deep-learning task (text classification, sentence similarity, NER,
+  question answering, object detection) trains for. `time` does not shorten such a fit, so the epoch count is its one dial on cost - try 2 first to see
+  what an epoch costs on the machine. Needs an `mloop` that has the flag; a task that does not count epochs refuses it.
+
 ## [0.14.0] - 2026-10-30
 
 ### Added

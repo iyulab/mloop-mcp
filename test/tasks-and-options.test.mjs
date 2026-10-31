@@ -76,6 +76,22 @@ test('mloop_train passes the image-anomaly, ranking and sampling options as CLI 
   });
 });
 
+test('mloop_train passes epochs as --epochs, and leaves the flag out when it is not given', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_train',
+      arguments: { projectPath: dir, dataFile: 'pictures', task: 'object-detection', epochs: 2 },
+    });
+    let args = argv();
+    assert.equal(args[0], 'train');
+    assert.equal(args[args.indexOf('--epochs') + 1], '2');
+
+    await client.callTool({ name: 'mloop_train', arguments: { projectPath: dir, dataFile: 'pictures', task: 'object-detection' } });
+    args = argv();
+    assert.ok(!args.includes('--epochs'));
+  });
+});
+
 test('mloop_quick_start needs no label for a task that learns without one', async () => {
   await withClient(async client => {
     await client.callTool({ name: 'mloop_quick_start', arguments: { projectPath: join(dir, 'qs'), dataFile: 'pictures', task: 'image-anomaly' } });
