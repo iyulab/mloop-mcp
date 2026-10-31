@@ -33,6 +33,9 @@ export { featuresSelectTool, featuresSelect, featuresSelectSchema, type Features
 export { tokenTool, token, tokenSchema, type TokenParams } from './token.js';
 export { embedTool, embed, embedSchema, type EmbedParams } from './embed.js';
 export { encoderTool, encoder, encoderSchema, type EncoderParams } from './encoder.js';
+export { explainTool, explain, explainSchema, type ExplainParams } from './explain.js';
+export { runtimeTool, runtime, runtimeSchema, type RuntimeParams } from './runtime.js';
+export { dockerTool, docker, dockerSchema, type DockerParams } from './docker.js';
 
 // Composite workflow tools
 export { quickStartTool, quickStart, quickStartSchema, type QuickStartParams } from './quick-start.js';

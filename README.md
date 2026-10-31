@@ -94,7 +94,10 @@ plugins:
 | `mloop_serve` | Start the REST API server; returns once it answers `/health`, and leaves it running |
 | `mloop_token` | Issue the bearer token the server requires on every endpoint but `/health` (`role: admin` for writes) |
 | `mloop_embed` | Images or texts to vectors with a pretrained encoder, with the encoder's identity (texts: mloop >= 0.46) |
-| `mloop_encoder` | List, install (catalog: `dinov2-small`, `multilingual-minilm`) or remove pretrained encoders |
+| `mloop_encoder` | List, install (catalog: `dinov2-small`, `multilingual-minilm`), add your own (definition, ONNX graph, tokenizer) or remove pretrained encoders |
+| `mloop_explain` | Which input columns a model relies on — permutation importance on a labeled file, in the metric `mloop_evaluate` reports (an `mloop` newer than 0.48) |
+| `mloop_runtime` | List, install or remove the on-demand deep-learning runtimes (`tf`, `torch`, `onnxruntime`) |
+| `mloop_docker` | Generate the Dockerfile and docker-compose.yml that serve a project's model |
 | `mloop_init` | Initialize a new MLoop project (`mloop.yaml`, `datasets/`, `models/`) |
 | `mloop_quick_start` | One step from zero to a production model: initialize, train, auto-promote |
 | `mloop_auto_train` | Profile the data, train with an automatic time budget and list the experiments in one call |
@@ -109,8 +112,8 @@ plugins:
 Every tool declares the MCP safety hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) in `tools/list`, so a
 client can apply an approval policy without reading tool names: the reading tools (`mloop_list`, `mloop_status`, `mloop_info`,
 `mloop_analyze`, `mloop_compare`, `mloop_evaluate`, `mloop_validate`, `mloop_logs`, `mloop_trigger`, `mloop_drift`, `mloop_embed`,
-`mloop_project_overview`, `mloop_token`) change nothing; the others write, and `destructiveHint: true` marks the ones that can overwrite a
-file at a path you name or delete a setting, a threshold or an installed encoder. The table is `src/tool-hints.ts`.
+`mloop_project_overview`, `mloop_token`, `mloop_explain`) change nothing; the others write, and `destructiveHint: true` marks the ones that can overwrite a
+file at a path you name or delete a setting, a threshold, an installed encoder or runtime. The table is `src/tool-hints.ts`.
 
 ## Tool Examples
 

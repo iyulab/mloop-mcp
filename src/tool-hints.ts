@@ -45,6 +45,7 @@ export const TOOL_HINTS: Readonly<Record<string, ToolHints>> = {
   mloop_trigger: READS,
   mloop_drift: READS,
   mloop_embed: READS,
+  mloop_explain: READS,
   mloop_project_overview: READS,
   mloop_token: READS, // issues a signed token; nothing is stored
 
@@ -70,9 +71,11 @@ export const TOOL_HINTS: Readonly<Record<string, ToolHints>> = {
   mloop_features_select: WRITES_OVER,
   mloop_sample: WRITES_OVER,
   mloop_detect: WRITES_OVER, // writes only when `output` is given
+  mloop_docker: WRITES_OVER, // writes a Dockerfile and a compose file over the ones there
 
-  // Installs download weights; remove deletes them
+  // Installs download weights or a runtime; remove deletes them
   mloop_encoder: hints(false, true, true, true),
+  mloop_runtime: hints(false, true, true, true),
 };
 
 /** The hints of tool <paramref name="name"/>; throws when it has none. */

@@ -23,6 +23,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
   `--analyze-data --json`, and both fields are then null.
 - `decideOnly` on `mloop_promote` (report what `latest`/`best` would promote and move nothing), `modelName` and `label` on `mloop_init`, `verbose` on
   `mloop_status` and `mloop_validate`, `list` on `mloop_prep_plan`, and `textFile` on `mloop_embed` (a file of texts, one per line).
+- Three tools for commands the CLI had and the server did not: `mloop_explain` (which input columns a model relies on — permutation importance on a labeled
+  file; needs an `mloop` newer than 0.48), `mloop_runtime` (list, install or remove the deep-learning runtimes `tf`, `torch`, `onnxruntime`) and
+  `mloop_docker` (write the Dockerfile and docker-compose.yml that serve a model). `mloop_encoder` also takes `add`: register an encoder of your own from its
+  definition file, ONNX graph and, for a text encoder, tokenizer.
 
 ## [0.14.0] - 2026-10-30
 
