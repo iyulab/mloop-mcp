@@ -6,6 +6,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-02
+
 ### Added
 
 - `mloop_predict` takes `scoreThreshold`, passed as `mloop predict --score-threshold`: for an object-detection model, the confidence a box needs to be reported (default 0.5). A detector that finds objects without being 0.5 confident scores `map_50` 0 and shows nothing at the default; `0.3` (then lower) shows what it finds. Needs an `mloop` that has the flag; any other task refuses it.
