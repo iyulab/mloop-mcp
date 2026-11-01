@@ -8,6 +8,7 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ### Added
 
+- `mloop_predict` takes `scoreThreshold`, passed as `mloop predict --score-threshold`: for an object-detection model, the confidence a box needs to be reported (default 0.5). A detector that finds objects without being 0.5 confident scores `map_50` 0 and shows nothing at the default; `0.3` (then lower) shows what it finds. Needs an `mloop` that has the flag; any other task refuses it.
 - `mloop_train` takes `epochs`, passed as `mloop train --epochs`: how many epochs a deep-learning task (text classification, sentence similarity, NER,
   question answering, object detection) trains for. `time` does not shorten such a fit, so the epoch count is its one dial on cost - try 2 first to see
   what an epoch costs on the machine. Needs an `mloop` that has the flag; a task that does not count epochs refuses it.

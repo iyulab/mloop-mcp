@@ -20,13 +20,15 @@ export const predictSchema = z.object({
   records: z.string().optional().describe('For a JSON data file: the dotted path to the array whose items are the rows'),
   unknownStrategy: z.enum(['auto', 'error', 'use-most-frequent', 'use-missing']).optional()
     .describe('Strategy for handling unknown categorical values in prediction data'),
+  scoreThreshold: z.number().gt(0).max(1).optional()
+    .describe('Object detection only: report boxes with at least this confidence (default 0.5). A detector trained by MLoop since the ranked metrics keeps every box down to 0.05, so 0.3 (then lower) shows what a not-yet-confident detector finds; an older model keeps only boxes of 0.5 and over'),
 });
 
 export type PredictParams = z.infer<typeof predictSchema>;
 
 export async function predict(params: PredictParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, dataFile, modelName, model, experimentId, output, log, unknownStrategy, includeFeatures, records } = params;
+    const { projectPath, dataFile, modelName, model, experimentId, output, log, unknownStrategy, includeFeatures, records, scoreThreshold } = params;
 
     // dataFile is a positional argument
     const positional: string[] = [];
@@ -41,6 +43,7 @@ export async function predict(params: PredictParams): Promise<{ content: Array<{
     if (unknownStrategy) cliParams['unknown-strategy'] = unknownStrategy;
     if (includeFeatures === false) cliParams['include-features'] = 'false';
     if (records) cliParams['records'] = records;
+    if (scoreThreshold !== undefined) cliParams['score-threshold'] = scoreThreshold;
 
     // Structured propagation: without an explicit output file, request `--json` so the agent receives the
     // full prediction rows (predictedLabel, probabilities, conformal band, and the normalized `confidence`
