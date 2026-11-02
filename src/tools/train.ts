@@ -28,6 +28,7 @@ export const trainSchema = z.object({
   additionalDataFiles: z.array(z.string()).optional().describe(
     'Files merged after dataFile (e.g. a retraining set from mloop_sample create); a file without the weight column counts its rows 1'),
   portable: z.boolean().optional().describe('Train only with steps ONNX can express, so mloop_export_onnx can export the model'),
+  ensemble: z.boolean().optional().describe('Answer with a weighted blend of the search\'s best trials when it scores better out of fold (binary classification and regression; another task refuses it). A blend is one model file several times larger and a single-row request to a served model takes several times as long; mloop_export_onnx refuses it and it cannot be combined with `portable`'),
   groupColumn: z.string().optional().describe('Ranking: the column that groups rows into query contexts'),
   encoder: z.string().optional().describe('image-anomaly: the installed image encoder the pictures are embedded with (default: the only one installed — see mloop_encoder)'),
   bankSize: z.number().int().positive().optional().describe('image-anomaly: the most patches the bank holds; a limit keeps a coreset of the patches (default: every patch)'),
@@ -68,6 +69,7 @@ export async function train(params: TrainParams, ctx?: ServerContext): Promise<{
     if (options.dropMissingLabels) cliParams['drop-missing-labels'] = true;
     if (options.weight) cliParams['weight'] = options.weight;
     if (options.portable) cliParams['portable'] = true;
+    if (options.ensemble) cliParams['ensemble'] = true;
     if (options.groupColumn) cliParams['group-column'] = options.groupColumn;
     if (options.encoder) cliParams['encoder'] = options.encoder;
     if (options.bankSize) cliParams['bank-size'] = options.bankSize;

@@ -6,6 +6,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_train` takes `ensemble`, passed as `mloop train --ensemble`: answer with a weighted blend of the trainer search's best trials when it scores better out of fold (binary classification and regression). A blend is one model file several times larger and a single-row request to a served model takes several times as long; `mloop_export_onnx` refuses it. Needs an `mloop` that has the flag.
+
 ## [0.15.0] - 2026-11-02
 
 ### Added

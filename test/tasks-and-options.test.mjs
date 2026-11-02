@@ -92,6 +92,19 @@ test('mloop_train passes epochs as --epochs, and leaves the flag out when it is 
   });
 });
 
+test('mloop_train passes ensemble as --ensemble, and leaves the flag out when it is not given', async () => {
+  await withClient(async client => {
+    await client.callTool({ name: 'mloop_train', arguments: { projectPath: dir, dataFile: 'datasets/train.csv', ensemble: true } });
+    let args = argv();
+    assert.equal(args[0], 'train');
+    assert.ok(args.includes('--ensemble'));
+
+    await client.callTool({ name: 'mloop_train', arguments: { projectPath: dir, dataFile: 'datasets/train.csv' } });
+    args = argv();
+    assert.ok(!args.includes('--ensemble'));
+  });
+});
+
 test('mloop_quick_start needs no label for a task that learns without one', async () => {
   await withClient(async client => {
     await client.callTool({ name: 'mloop_quick_start', arguments: { projectPath: join(dir, 'qs'), dataFile: 'pictures', task: 'image-anomaly' } });
