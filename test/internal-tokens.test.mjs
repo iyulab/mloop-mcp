@@ -42,7 +42,7 @@ const DRIVE_LETTER_PATH = /\b[A-Za-z]:\\/g;
 const PRIVATE_WORKSPACE_REF = /\b(claudedocs|HANDOFF|dev-docs)\b/g;
 /** The private workspace repository, named the way such repositories are named, or the phrases that point at it. */
 const PRIVATE_REPO_REF = /\b[A-Za-z0-9]+-umbrella\b|\bumbrella (?:policy|repo(?:sitory)?|CLAUDE)\b/g;
-/** A sequence number of a private data collection ("SEQ020"). */
+/** A sequence number of a private data collection ("SEQ000"). */
 const DATASET_SEQUENCE_ID = /\bSEQ\d{3}\b/g;
 
 function* tokensIn(line, isProse) {
@@ -115,9 +115,9 @@ const CASES = [
   ['.md', 'tracked in claudedocs/plans', true, 'private working tree'],
   ['.md', 'the design is in dev-docs/mloop', true, 'private design tree'],
   ['.md', 'the next step is in HANDOFF', true, 'private working tree'],
-  ['.md', 'kept in the mloop-umbrella repo', true, 'private workspace repository name'],
+  ['.md', 'kept in the acme-umbrella repo', true, 'private workspace repository name'],
   ['.md', 'see the umbrella policy for the cadence', true, 'pointer at the private workspace policy'],
-  ['.md', 'seen on SEQ020 at 50K rows', true, 'private data collection id'],
+  ['.md', 'seen on SEQ000 at 50K rows', true, 'private data collection id'],
   ['.md', 'see CVE-2024-1234 and RFC-4180', false, 'public identifiers'],
   ['.md', 'the SHA-256 of the file', false, 'a hash algorithm name'],
   ['.md', 're-encoded as UTF-8', false, 'an encoding'],
@@ -126,7 +126,7 @@ const CASES = [
   ['.md', 'a SEQUENCE of 12 steps', false, 'an ordinary word that starts with the letters'],
   ['.md', 'a two-tier router, run-1 and t-1', false, 'lower-case fixture data and a hyphenated word'],
   ['.gitignore', 'claudedocs/', false, 'an ignore pattern that keeps a private tree out of a clone'],
-  ['.gitignore', '# the notes live in the mloop-umbrella repo', true, "an ignore file's comment is prose"],
+  ['.gitignore', '# the notes live in the acme-umbrella repo', true, "an ignore file's comment is prose"],
   ['docs/guide.md', 'claudedocs/', true, 'the same text in a document'],
 ];
 
