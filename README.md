@@ -115,6 +115,11 @@ client can apply an approval policy without reading tool names: the reading tool
 `mloop_project_overview`, `mloop_token`, `mloop_explain`) change nothing; the others write, and `destructiveHint: true` marks the ones that can overwrite a
 file at a path you name or delete a setting, a threshold, an installed encoder or runtime. The table is `src/tool-hints.ts`.
 
+Two `mloop` options are left out on purpose, because each deletes data an agent cannot get back: `mloop logs prune` (drops the
+prediction-log and feedback day-files older than the project's `retention.days`, which `mloop serve` already does once a day) and
+`mloop promote --no-backup` (skips the backup `mloop_rollback` restores from). Run them from a shell, or set `retention:` in
+`mloop.yaml`.
+
 ## Tool Examples
 
 ### Train a model
