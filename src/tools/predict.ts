@@ -9,7 +9,7 @@ import { formatError } from '../utils/errors.js';
 
 export const predictSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
-  dataFile: z.string().optional().describe('Prediction data file (default: datasets/predict.csv)'),
+  dataFile: z.string().optional().describe('Prediction data file (default: data.predict in mloop.yaml, else datasets/predict.csv)'),
   modelName: z.string().optional().describe('Model name'),
   experimentId: z.string().optional()
     .describe('Predict with this experiment (e.g. a staging candidate) instead of production — production does not move'),

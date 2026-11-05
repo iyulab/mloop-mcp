@@ -10,7 +10,7 @@ import { taskSchema } from '../tasks.js';
 
 export const trainSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
-  dataFile: z.string().optional().describe('Training data file (default: datasets/train.csv)'),
+  dataFile: z.string().optional().describe('Training data file (default: data.train in mloop.yaml, else datasets/train.csv; with additionalDataFiles and no dataFile, datasets/train.csv)'),
   label: z.string().optional().describe('Label column name'),
   task: taskSchema
     .optional()

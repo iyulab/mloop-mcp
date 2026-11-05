@@ -11,7 +11,7 @@ export const explainSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   experimentId: z.string().optional().describe('Experiment to explain (default: the production model)'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
-  dataFile: z.string().optional().describe('Labeled file the model is scored on, with the label column (default: datasets/test.csv)'),
+  dataFile: z.string().optional().describe('Labeled file the model is scored on, with the label column (default: data.test in mloop.yaml, else datasets/test.csv)'),
   weight: z.string().optional().describe('Column that weights the rows (defaults as mloop_evaluate does)'),
   repeats: z.number().int().positive().optional().describe('Shuffles per column; the importance is their mean (default 3)'),
   rows: z.number().int().positive().optional().describe('Most rows scored; a larger file is sampled — every column costs repeats scorings (default 2000)'),

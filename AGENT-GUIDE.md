@@ -59,7 +59,7 @@ Use `mloop_project_overview` — returns status, experiments, and production met
 ## Token-Saving Tips
 - Prefer composite tools (`quick_start`, `auto_train`, `project_overview`) over individual calls
 - Omit `time` parameter to use auto-time estimation
-- Omit `dataFile` to use default `datasets/train.csv`
+- Omit `dataFile` to use the default: `data.train` of `mloop.yaml`, else `datasets/train.csv` (`mloop_evaluate` and `mloop_explain` read `data.test` / `datasets/test.csv`, `mloop_predict` `data.predict` / `datasets/predict.csv`)
 - Omit `modelName` to use default model
 
 ## Error Recovery

@@ -9,7 +9,7 @@ import { formatError } from '../utils/errors.js';
 
 export const evaluateSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
-  dataFile: z.string().optional().describe('Test data file for evaluation'),
+  dataFile: z.string().optional().describe('Test data file for evaluation (default: data.test in mloop.yaml, else datasets/test.csv)'),
   modelName: z.string().optional().describe('Model name'),
   experimentId: z.string().optional().describe('Specific experiment to evaluate'),
   sliceBy: z.string().optional().describe('Also report the metrics for each value of this column of the test data'),

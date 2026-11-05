@@ -10,7 +10,7 @@ import { formatError } from '../utils/errors.js';
 export const prepSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   modelName: z.string().optional().describe("Model whose prep steps (mloop.yaml) to run (default: 'default')"),
-  input: z.string().optional().describe('Input CSV file (default: datasets/train.csv)'),
+  input: z.string().optional().describe('Input CSV file (default: data.train in mloop.yaml, else datasets/train.csv)'),
   output: z.string().optional().describe('Output CSV file (default: <input>_prep.csv)'),
   dryRun: z.boolean().optional().describe('Show the pipeline steps without executing them'),
 });

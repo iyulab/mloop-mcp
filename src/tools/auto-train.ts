@@ -10,7 +10,7 @@ import { formatError } from '../utils/errors.js';
 
 export const autoTrainSchema = z.object({
   projectPath: z.string().describe('Project directory path'),
-  dataFile: z.string().optional().describe('Training data file (default: datasets/train.csv)'),
+  dataFile: z.string().optional().describe('Training data file (default: data.train in mloop.yaml, else datasets/train.csv)'),
   label: z.string().optional().describe('Label column (uses mloop.yaml default if omitted)'),
   modelName: z.string().optional().describe('Model name (default: "default")'),
   time: z.number().positive().optional().describe('Training time (omit for auto-time)'),
