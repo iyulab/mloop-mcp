@@ -10,6 +10,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 - `mloop_train` takes `ensemble`, passed as `mloop train --ensemble`: answer with a weighted blend of the trainer search's best trials when it scores better out of fold (binary classification and regression). A blend is one model file several times larger and a single-row request to a served model takes several times as long; `mloop_export_onnx` refuses it. Needs an `mloop` that has the flag.
 
+### Changed
+
+- The descriptions of the data-file arguments (`mloop_train`, `mloop_auto_train`, `mloop_evaluate`, `mloop_explain`, `mloop_predict`, `mloop_prep`) and the agent guide say where the default comes from when `dataFile` is left out: the `data.train`, `data.test` or `data.predict` the project's `mloop.yaml` declares, else `datasets/train.csv`, `datasets/test.csv` or `datasets/predict.csv`. An agent reading them no longer assumes the conventional file when the project names another one. No behaviour change.
+
 ## [0.15.0] - 2026-11-02
 
 ### Added
