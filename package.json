@@ -20,6 +20,7 @@
     "clean": "rimraf build",
     "prepublishOnly": "npm run clean && npm run build",
     "check:cli": "npm run build && node scripts/check-cli-options.mjs",
+    "check:output": "npm run build && node scripts/check-cli-output.mjs",
     "test": "npm run build && node --test"
   },
   "keywords": [

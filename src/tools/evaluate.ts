@@ -4,6 +4,7 @@
 
 import { z } from 'zod';
 import { executeMloop } from '../executor.js';
+import { read } from '../cli-fields.js';
 import { parseCliOutput } from '../utils/parser.js';
 import { formatError } from '../utils/errors.js';
 
@@ -96,6 +97,6 @@ export const evaluateTool = {
 /** The experiment in production for `modelName` (the default model when not given), or undefined. */
 async function productionExperiment(projectPath: string, modelName: string | undefined): Promise<string | undefined> {
   const listed = await executeMloop(['list', '--json', ...(modelName ? ['--name', modelName] : [])], { cwd: projectPath });
-  const production = (JSON.parse(listed.stdout) as { production?: Record<string, string | null> }).production ?? {};
+  const production = (read(JSON.parse(listed.stdout) as object, 'list', 'production') ?? {}) as Record<string, string | null>;
   return production[modelName ?? 'default'] ?? undefined;
 }

@@ -225,11 +225,20 @@ npm test
 
 # Check that every tool passes the CLI only options it has (needs the mloop CLI; pass its path if not on PATH)
 npm run check:cli -- /path/to/mloop
+
+# Check that the JSON fields the server reads by name are in what the CLI prints
+npm run check:output -- /path/to/mloop
 ```
 
 `check:cli` calls each tool with its schema filled in against a stand-in that records the command line, then compares
 every option and argument with the real CLI's `--help`. Run it before a release and whenever a tool or the CLI's
 options change — a tool passing an option the CLI does not have fails only when an agent calls it.
+
+`check:output` is its other half: most tools hand the CLI's JSON on as it is, but a few places read a field by name (the
+events of `mloop train --json`, the production map of `mloop list --json`). Those fields are declared in
+`src/cli-fields.ts` — a read of an undeclared field does not compile — and `check:output` runs the real CLI (a short
+training run in a temporary project) and reports every declared field it did not print. A CLI that renames a field
+otherwise fails quietly: the field reads as missing.
 
 ## Architecture
 

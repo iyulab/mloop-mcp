@@ -7,6 +7,7 @@ import { mkdirSync } from 'fs';
 import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop, buildArgsWithPositional } from '../executor.js';
 import { runTraining } from '../training-run.js';
+import { read } from '../cli-fields.js';
 import { formatError } from '../utils/errors.js';
 import { taskSchema } from '../tasks.js';
 
@@ -39,8 +40,8 @@ export async function quickStart(params: QuickStartParams, ctx?: ServerContext):
     const training = await runTraining(trainArgs, params.projectPath, params.time, ctx);
     steps.push('Model trained');
 
-    const expId = String(training.result?.['experimentId'] ?? 'unknown');
-    if (training.promotion?.['promoted'] === true) {
+    const expId = String(read(training.result, 'train#result', 'experimentId') ?? 'unknown');
+    if (read(training.promotion, 'train#promotion', 'promoted') === true) {
       steps.push(`${expId} auto-promoted to production`);
     }
 

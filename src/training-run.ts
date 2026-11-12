@@ -5,6 +5,7 @@
 
 import type { ServerContext } from '@modelcontextprotocol/server';
 import { executeMloop } from './executor.js';
+import { read } from './cli-fields.js';
 import { CliExecutionError, formatError } from './utils/errors.js';
 
 /** One line of `mloop train --json`: phase · trial · warning · result · promotion · analysis · script · error. */
@@ -81,19 +82,20 @@ export async function runTraining(
   const onLine = (line: string) => {
     const event = parse(line);
     if (!event) return;
-    switch (event.event) {
+    switch (read(event, 'train', 'event')) {
       case 'phase':
-        progress(`phase ${String(event['phase'])}`, true);
+        progress(`phase ${String(read(event, 'train#phase', 'phase'))}`, true);
         break;
       case 'trial': {
         trials++;
         // Which score is best is the CLI's judgment (a metric's direction); the line reports this trial's.
-        const value = typeof event['value'] === 'number' ? ` ${String(event['metric'])} ${event['value'].toFixed(4)}` : '';
-        progress(`trial ${trials}: ${String(event['trainer'] ?? '').replace(/ \(.*$/, '')}${value}`, false);
+        const score = read(event, 'train#trial', 'value');
+        const value = typeof score === 'number' ? ` ${String(read(event, 'train#trial', 'metric'))} ${score.toFixed(4)}` : '';
+        progress(`trial ${trials}: ${String(read(event, 'train#trial', 'trainer') ?? '').replace(/ \(.*$/, '')}${value}`, false);
         break;
       }
       case 'warning':
-        warnings.push(String(event['message'] ?? ''));
+        warnings.push(String(read(event, 'train#warning', 'message') ?? ''));
         break;
       case 'result':
         result = event;
@@ -120,8 +122,8 @@ export async function runTraining(
     // The run says why it failed as error events; the console text on stderr repeats them for a person.
     if (error instanceof CliExecutionError) {
       const reasons = error.stdout.split('\n').map(parse)
-        .filter((e): e is TrainEvent => e?.event === 'error')
-        .map(e => String(e['message'] ?? ''));
+        .filter((e): e is TrainEvent => read(e, 'train', 'event') === 'error')
+        .map(e => String(read(e, 'train#error', 'message') ?? ''));
       if (reasons.length > 0) throw new Error(reasons.join('\n'));
     }
     throw new Error(formatError(error));
@@ -133,7 +135,7 @@ function parse(line: string): TrainEvent | null {
   if (!line.startsWith('{')) return null;
   try {
     const value = JSON.parse(line) as unknown;
-    return typeof value === 'object' && value !== null && 'event' in value ? value as TrainEvent : null;
+    return typeof value === 'object' && value !== null && read(value, 'train', 'event') !== undefined ? value as TrainEvent : null;
   } catch {
     return null;
   }
