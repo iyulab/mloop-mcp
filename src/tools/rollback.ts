@@ -10,6 +10,7 @@ import { formatError } from '../utils/errors.js';
 export const rollbackSchema = z.object({
   projectPath: z.string().describe('Path to MLoop project directory'),
   modelName: z.string().optional().describe('Model name'),
+  by: z.string().optional().describe('Who is changing production — a name or an account, recorded in the promotion history (nothing is recorded when it is not given)'),
   to: z.string().optional().describe('Experiment to return to; it must have been in production before (default: the one the current production replaced)'),
 });
 
@@ -17,11 +18,12 @@ export type RollbackParams = z.infer<typeof rollbackSchema>;
 
 export async function rollback(params: RollbackParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, modelName, to } = params;
+    const { projectPath, modelName, to, by } = params;
 
     const args: string[] = ['rollback'];
     if (modelName) args.push('--name', modelName);
     if (to) args.push('--to', to);
+    if (by) args.push('--by', by);
     args.push('--json');
 
     const result = await executeMloop(args, { cwd: projectPath });

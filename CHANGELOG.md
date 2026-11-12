@@ -6,6 +6,11 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_train` takes `userColumn` and `itemColumn`, passed as `mloop train --user-column` / `--item-column`: the columns of who rated and what was rated for a recommendation model, as `groupColumn` names the query column of a ranking one (they override `user_column` / `item_column` in `mloop.yaml`). `mloop_promote` and `mloop_rollback` take `by`, passed as `--by`: who is changing production, recorded in the promotion history. Needs an `mloop` that has the options.
+- `mloop_feedback` `add` takes `file`, passed as `mloop feedback add --from-file`: a table (CSV, TSV, a workbook, …) with one row per prediction — its prediction id and the actual value — to record many at once instead of `predictionId` and `value` (the two are not mixed). `idColumn`, `actualColumn`, `sourceColumn` and `weightColumn` name the columns (default `prediction_id`, `actual`, `source`, `weight`), and `source` / `weight` fill the rows whose cells are empty. A row that cannot be recorded comes back by its row number and the others are recorded; the call then reports an error carrying that list. Needs an `mloop` that has `feedback add --from-file`.
+
 ## [0.16.0] - 2026-11-09
 
 ### Added

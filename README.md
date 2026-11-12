@@ -105,7 +105,7 @@ plugins:
 | `mloop_validate` | Validate `mloop.yaml` (syntax, missing fields, invalid values) |
 | `mloop_prep` | Run a model's declared preprocessing steps over a CSV file and write the prepared file |
 | `mloop_logs` | View a model's prediction logs |
-| `mloop_feedback` | Add the actual value for a logged prediction (source, optional weight), list feedback, or read its metrics |
+| `mloop_feedback` | Add the actual value for a logged prediction (source, optional weight) — or for many at once from a table (`file`) — list feedback, or read its metrics |
 | `mloop_sample` | Create a sampled dataset from a CSV file, or a retraining dataset from logged predictions and feedback |
 | `mloop_trigger` | Check whether retraining is due, as JSON: one result per condition |
 

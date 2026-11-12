@@ -13,6 +13,7 @@ export const promoteSchema = z.object({
   latest: z.boolean().optional().describe('Promote the most recent completed experiment'),
   best: z.boolean().optional().describe('Promote the completed experiment with the best metric (direction-aware)'),
   modelName: z.string().optional().describe('Model name'),
+  by: z.string().optional().describe('Who is changing production — a name or an account, recorded in the promotion history (nothing is recorded when it is not given)'),
   force: z.boolean().optional().describe('Skip confirmation, and promote a model the quality gate refuses'),
   history: z.boolean().optional().describe('List every change of production instead of promoting (mloop >= 0.39)'),
   decideOnly: z.boolean().optional().describe('Report which experiment latest/best would promote, and move nothing — the production model stays as it is'),
@@ -22,7 +23,7 @@ export type PromoteParams = z.infer<typeof promoteSchema>;
 
 export async function promote(params: PromoteParams): Promise<{ content: Array<{ type: 'text'; text: string }>; isError?: boolean }> {
   try {
-    const { projectPath, experimentId, latest, best, modelName, force, history, decideOnly } = params;
+    const { projectPath, experimentId, latest, best, modelName, by, force, history, decideOnly } = params;
 
     // The history changes nothing and takes no selector.
     if (history) {
@@ -59,6 +60,7 @@ export async function promote(params: PromoteParams): Promise<{ content: Array<{
     if (modelName) args.push('--name', modelName);
     if (force) args.push('--force');
     if (decideOnly) args.push('--decide-only');
+    if (by) args.push('--by', by);
     // Structured, non-interactive output (mloop >= 0.21): result object or {"error": ...}.
     args.push('--json');
 

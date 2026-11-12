@@ -76,6 +76,42 @@ test('mloop_train passes the image-anomaly, ranking and sampling options as CLI 
   });
 });
 
+test('mloop_train passes the recommendation columns as --user-column and --item-column, and leaves them out when not given', async () => {
+  await withClient(async client => {
+    await client.callTool({
+      name: 'mloop_train',
+      arguments: { projectPath: dir, dataFile: 'ratings.csv', task: 'recommendation', label: 'rating', userColumn: 'who', itemColumn: 'what' },
+    });
+    let args = argv();
+    assert.equal(args[0], 'train');
+    assert.equal(args[args.indexOf('--user-column') + 1], 'who');
+    assert.equal(args[args.indexOf('--item-column') + 1], 'what');
+
+    await client.callTool({ name: 'mloop_train', arguments: { projectPath: dir, dataFile: 'ratings.csv', task: 'recommendation', label: 'rating' } });
+    args = argv();
+    assert.ok(!args.includes('--user-column') && !args.includes('--item-column'));
+  });
+});
+
+test('mloop_promote and mloop_rollback pass by as --by, and leave it out when it is not given', async () => {
+  await withClient(async client => {
+    await client.callTool({ name: 'mloop_promote', arguments: { projectPath: dir, experimentId: 'exp-002', by: 'reviewer@example' } });
+    let args = argv();
+    assert.equal(args[0], 'promote');
+    assert.equal(args[args.indexOf('--by') + 1], 'reviewer@example');
+
+    await client.callTool({ name: 'mloop_rollback', arguments: { projectPath: dir, by: 'reviewer@example' } });
+    args = argv();
+    assert.equal(args[0], 'rollback');
+    assert.equal(args[args.indexOf('--by') + 1], 'reviewer@example');
+
+    await client.callTool({ name: 'mloop_promote', arguments: { projectPath: dir, experimentId: 'exp-002' } });
+    assert.ok(!argv().includes('--by'));
+    await client.callTool({ name: 'mloop_rollback', arguments: { projectPath: dir } });
+    assert.ok(!argv().includes('--by'));
+  });
+});
+
 test('mloop_train passes epochs as --epochs, and leaves the flag out when it is not given', async () => {
   await withClient(async client => {
     await client.callTool({

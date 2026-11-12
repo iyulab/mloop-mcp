@@ -3,7 +3,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { feedbackArgs } from '../build/tools/feedback.js';
+import { feedbackArgs, addRefusal } from '../build/tools/feedback.js';
 import { sampleArgs } from '../build/tools/sample.js';
 
 const project = '/tmp/p';
@@ -30,6 +30,33 @@ test('feedback list carries limit and the day range; metrics carries the range b
 test('feedback add asks for JSON and carries the weight', () => {
   const args = feedbackArgs({ projectPath: project, action: 'add', predictionId: 'p1', value: 'yes', source: 'human', weight: 2 });
   assert.ok(args.includes('--json') && args.includes('--prediction-id') && args.includes('--weight'), args.join(' '));
+});
+
+test('feedback add from a file passes the file and its columns, not one prediction', () => {
+  const args = feedbackArgs({
+    projectPath: project, action: 'add', file: 'labels.csv', idColumn: 'ticket', actualColumn: 'verdict',
+    sourceColumn: 'how', weightColumn: 'w', source: 'reviewer-llm', weight: 2,
+  });
+  const at = (flag) => args[args.indexOf(flag) + 1];
+  assert.deepEqual(args.slice(0, 2), ['feedback', 'add']);
+  assert.equal(at('--from-file'), 'labels.csv');
+  assert.equal(at('--id-column'), 'ticket');
+  assert.equal(at('--actual-column'), 'verdict');
+  assert.equal(at('--source-column'), 'how');
+  assert.equal(at('--weight-column'), 'w');
+  assert.equal(at('--source'), 'reviewer-llm');
+  assert.equal(at('--weight'), '2');
+  assert.ok(args.includes('--json') && !args.includes('--prediction-id') && !args.includes('--actual-value'), args.join(' '));
+});
+
+test('feedback add takes one prediction or a file, and names what is missing', () => {
+  const base = { projectPath: project, action: 'add' };
+  assert.equal(addRefusal({ ...base, predictionId: 'p1', value: 'yes' }), undefined);
+  assert.equal(addRefusal({ ...base, file: 'labels.csv' }), undefined);
+  assert.match(addRefusal({ ...base, file: 'labels.csv', predictionId: 'p1' }), /not both/);
+  assert.match(addRefusal({ ...base, predictionId: 'p1' }), /predictionId and value.*or file/);
+  assert.match(addRefusal({ ...base, predictionId: 'p1', value: 'yes', idColumn: 'ticket' }), /give file/);
+  assert.equal(addRefusal({ projectPath: project, action: 'list' }), undefined);
 });
 
 test('sample create from logs names the model with --name, from a file does not name one; both ask for JSON', () => {
