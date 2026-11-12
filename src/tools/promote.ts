@@ -89,6 +89,6 @@ export async function promote(params: PromoteParams): Promise<{ content: Array<{
 
 export const promoteTool = {
   name: 'mloop_promote',
-  description: 'Promote an experiment to production. Select by explicit ID, or auto-select with latest (newest completed) / best (best metric, direction-aware). The promoted model will be used for predictions. With history, lists every change of production instead — experiment, what it replaced, action (promote / auto-promote / rollback), the quality gate outcome (passed / forced / not-applied) and the metric value (mloop >= 0.39).',
+  description: 'Promote an experiment to production. Select by explicit ID, or auto-select with latest (newest completed) / best (best metric, direction-aware). The promoted model will be used for predictions. With history, lists every change of production instead — experiment, what it replaced, action (promote / auto-promote / rollback), the quality gate outcome (passed / forced / not-applied) and the metric value (mloop >= 0.39). Promoting by explicit ID still promotes a model that does not beat the production it replaces; the result then carries notBetterThanProduction (the reason and both scores) — read it before treating the promotion as an improvement (mloop >= 0.51).',
   handler: promote,
 };
