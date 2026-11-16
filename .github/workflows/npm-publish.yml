@@ -11,6 +11,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Trusted publishing: npm exchanges this job's OIDC token for a short-lived publish credential, so no stored token is used.
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -21,6 +25,12 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing needs npm 11.5.1 or later; the npm bundled with Node 22 is older.
+      - name: Use an npm that can publish with trusted publishing
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
 
       - name: Check if version is already published
         id: version-check
@@ -60,8 +70,6 @@ jobs:
       - name: Publish to npm
         if: steps.version-check.outputs.skip == 'false'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Summary
         run: |

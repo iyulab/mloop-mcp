@@ -6,6 +6,8 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-16
+
 ### Added
 
 - `mloop_train` takes `userColumn` and `itemColumn`, passed as `mloop train --user-column` / `--item-column`: the columns of who rated and what was rated for a recommendation model, as `groupColumn` names the query column of a ranking one (they override `user_column` / `item_column` in `mloop.yaml`). `mloop_promote` and `mloop_rollback` take `by`, passed as `--by`: who is changing production, recorded in the promotion history. Needs an `mloop` that has the options.
