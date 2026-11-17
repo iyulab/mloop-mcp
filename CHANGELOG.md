@@ -6,6 +6,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_export_onnx` takes `annotations`, passed as one `mloop export onnx --annotation key=value` per pair: opaque text written into the manifest's `annotations` — for example the version of the preprocessing that feeds the graph — which a hash or signature over the manifest then covers. Needs an `mloop` that has `--annotation`.
+
 ## [0.17.0] - 2026-11-16
 
 ### Added

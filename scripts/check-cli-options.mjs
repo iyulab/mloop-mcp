@@ -55,6 +55,7 @@ function samples(name, node, flip = false) {
     case 'number': return [1];
     case 'boolean': return flip ? [false] : [true];
     case 'array': return [['x']];
+    case 'record': return [{ k: 'v' }];
     case 'string': return [name === 'projectPath' ? work : 'x'];
     default: return [];
   }
