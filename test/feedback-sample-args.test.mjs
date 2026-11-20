@@ -27,6 +27,15 @@ test('feedback list carries limit and the day range; metrics carries the range b
   assert.ok(metrics.includes('--from') && metrics.includes('--to') && !metrics.includes('--limit'), metrics.join(' '));
 });
 
+test('feedback metrics carries the experiment whose answers it reads, and list and add do not', () => {
+  const metrics = feedbackArgs({ projectPath: project, action: 'metrics', modelName: 'm', experiment: 'exp-002' });
+  assert.ok(metrics.includes('--experiment') && metrics[metrics.indexOf('--experiment') + 1] === 'exp-002', metrics.join(' '));
+  const every = feedbackArgs({ projectPath: project, action: 'metrics', experiment: 'all' });
+  assert.equal(every[every.indexOf('--experiment') + 1], 'all');
+  assert.ok(!feedbackArgs({ projectPath: project, action: 'metrics' }).includes('--experiment'), 'an unset experiment is not passed — the CLI default is the production experiment');
+  assert.ok(!feedbackArgs({ projectPath: project, action: 'list', experiment: 'exp-002' }).includes('--experiment'));
+});
+
 test('feedback add asks for JSON and carries the weight', () => {
   const args = feedbackArgs({ projectPath: project, action: 'add', predictionId: 'p1', value: 'yes', source: 'human', weight: 2 });
   assert.ok(args.includes('--json') && args.includes('--prediction-id') && args.includes('--weight'), args.join(' '));

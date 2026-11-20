@@ -24,6 +24,9 @@ export const feedbackSchema = z.object({
   sourceColumn: z.string().optional().describe('With file: the column holding where each value came from (default "source", read when the file has it)'),
   weightColumn: z.string().optional().describe('With file: the column holding each row\'s weight (default "weight", read when the file has it)'),
   limit: z.number().int().positive().optional().describe('Maximum number of entries to show (for "list"; default 20)'),
+  experiment: z.string().optional().describe(
+    'For "metrics": whose answers the metrics are of — an experiment id, or "all" for every experiment\'s. Default: the experiment in production, the answers `mloop_trigger` judges; with nothing promoted, every answer. ' +
+    'Needs an mloop that has `feedback metrics --experiment`.'),
   from: z.string().optional().describe('Only entries from this day on (yyyy-MM-dd; for "list" and "metrics")'),
   to: z.string().optional().describe('Only entries up to this day (yyyy-MM-dd; for "list" and "metrics")'),
 });
@@ -49,6 +52,7 @@ export function feedbackArgs(params: FeedbackParams): string[] {
   } else {
     cliParams['name'] = params.modelName;
     if (params.action === 'list') cliParams['limit'] = params.limit;
+    if (params.action === 'metrics') cliParams['experiment'] = params.experiment;
     cliParams['from'] = params.from;
     cliParams['to'] = params.to;
   }

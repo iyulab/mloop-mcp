@@ -6,6 +6,10 @@ Releases before 0.11.3 are described by their commits. 0.12.0 includes the 0.11.
 
 ## [Unreleased]
 
+### Added
+
+- `mloop_feedback` takes `experiment` for the `metrics` action, passed as `mloop feedback metrics --experiment`: an experiment id, or `all` for every experiment's answers. Without it the CLI reads the experiment in production (the answers `mloop_trigger` judges) — an `mloop` that has the option is needed to pass it.
+
 ## [0.18.0] - 2026-11-19
 
 ### Added
